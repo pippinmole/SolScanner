@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SolScanner;
+namespace SolScanner.Responses;
 
 public sealed class SolscanResponse<T> where T : class
 {

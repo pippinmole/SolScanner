@@ -33,6 +33,7 @@ public sealed class UrlBuilder
     private uint _timeTo;
     private string _programAddress;
     private List<string> _times;
+    private uint _blockNumber;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -202,6 +203,12 @@ public sealed class UrlBuilder
         return this;
     }
 
+    public UrlBuilder WithBlock(uint blockNumber)
+    {
+        _blockNumber = blockNumber;
+        return this;
+    }
+    
     public string Build()
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -270,7 +277,10 @@ public sealed class UrlBuilder
             query.Add($"time_from={_timeFrom}");
 
         if (_timeTo > 0)
-            query.Add($"time_to={_timeTo}");
+            query.Add($"time_to={_timeTo}");    
+        
+        if (_blockNumber > 0)
+            query.Add($"block={_blockNumber}");
 
         if (!string.IsNullOrEmpty(_sortBy))
             query.Add($"sort_by={_sortBy}");

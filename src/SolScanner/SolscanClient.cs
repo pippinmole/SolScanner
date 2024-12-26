@@ -108,6 +108,30 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     #endregion
     
     #region Block APIs
+
+    /// <summary>
+    /// Get the list of the latest blocks
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<Block>>> GetLastBlock(LastBlockRequest r) =>
+        WithRequest<SolscanResponse<List<Block>>>(r);
+    
+    /// <summary>
+    /// Get the list of transactions of a block
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<BlockTransactionsResponse>> GetBlockTransactions(BlockTransactionsRequest r) =>
+        WithRequest<SolscanResponse<BlockTransactionsResponse>>(r);
+    
+    /// <summary>
+    /// Get the details of a block
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<BlockDetailsResponse>> GetBlockDetails(BlockDetailsRequest r) =>
+        WithRequest<SolscanResponse<BlockDetailsResponse>>(r);
     
     #endregion
     
