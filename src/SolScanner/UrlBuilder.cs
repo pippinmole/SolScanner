@@ -31,6 +31,8 @@ public sealed class UrlBuilder
     private bool? _removeSpam;
     private uint _timeFrom;
     private uint _timeTo;
+    private string _programAddress;
+    private List<string> _times;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -185,6 +187,20 @@ public sealed class UrlBuilder
         _timeTo = timeTo;
         return this;
     }
+    
+    public UrlBuilder WithProgramAddress(string programAddress)
+    {
+        _programAddress = programAddress;
+        return this;
+    }
+
+    public UrlBuilder WithTime(DateTime[] times)
+    {
+        var asString = times.Select(x => x.ToString("YYYmmDD"));
+
+        _times = asString.ToList();
+        return this;
+    }
 
     public string Build()
     {
@@ -208,6 +224,9 @@ public sealed class UrlBuilder
         if (!string.IsNullOrEmpty(_limit))
             query.Add($"limit={_limit}");
 
+        if (!string.IsNullOrEmpty(_programAddress))
+            query.Add($"program={_programAddress}");
+
         foreach (var activityType in _activityTypes)
             query.Add($"activity_type[]={activityType}");
 
@@ -225,6 +244,9 @@ public sealed class UrlBuilder
 
         foreach (var amount in _amounts)
             query.Add($"amount[]={amount}");
+
+        foreach (var time in _times)
+            query.Add($"time[]={time}");
 
         foreach (var blockTime in _blockTimes)
             query.Add($"block_time[]={blockTime}");

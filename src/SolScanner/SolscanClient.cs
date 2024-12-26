@@ -15,7 +15,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     #region Free Tier
 
     public Task<SolscanResponse<ChainInformation>> GetChainInformation() =>
-        WithRequest<SolscanResponse<ChainInformation>>(new ChainInformationRequest().GetUrl());
+        WithRequest<SolscanResponse<ChainInformation>>(new ChainInformationRequest());
 
     #endregion
 
@@ -27,7 +27,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<Transfer>> GetAccountTransfer(AccountTransferRequest r) =>
-        WithRequest<SolscanResponse<Transfer>>(r.GetUrl());
+        WithRequest<SolscanResponse<Transfer>>(r);
 
     /// <summary>
     /// Get token accounts of an account
@@ -35,7 +35,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<TokenAccountData>> GetAccountTokenAccounts(AccountTokenAccountsRequest r) => 
-        WithRequest<SolscanResponse<TokenAccountData>>(r.GetUrl());
+        WithRequest<SolscanResponse<TokenAccountData>>(r);
 
     /// <summary>
     /// Get defi activities involving an account
@@ -43,7 +43,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<DefiActivityData>>> GetAccountDefiActivity(AccountDefiActivityRequest r) => 
-        WithRequest<SolscanResponse<List<DefiActivityData>>>(r.GetUrl());
+        WithRequest<SolscanResponse<List<DefiActivityData>>>(r);
 
     /// <summary>
     /// Get balance change activities involving an account
@@ -51,7 +51,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<BalanceChangeActivity>>> GetAccountBalanceChangeActivities(AccountBalanceChangeActivitiesRequest r) =>
-        WithRequest<SolscanResponse<List<BalanceChangeActivity>>>(r.GetUrl());
+        WithRequest<SolscanResponse<List<BalanceChangeActivity>>>(r);
     
     /// <summary>
     /// Get balance change activities involving an account
@@ -59,7 +59,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<AccountTransaction>>> GetAccountTransactions(AccountTransactionsRequest r) =>
-        WithRequest<SolscanResponse<List<AccountTransaction>>>(r.GetUrl());    
+        WithRequest<SolscanResponse<List<AccountTransaction>>>(r);    
     
     /// <summary>
     /// Get the list of stake accounts of an account
@@ -67,7 +67,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<AccountStake>>> GetAccountStakes(AccountStakesRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r.GetUrl());
+        WithRequest<SolscanResponse<List<AccountStake>>>(r);
     
     /// <summary>
     /// Get the list of stake accounts of an account
@@ -75,7 +75,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<AccountStake>>> GetAccountDetails(AccountDetailsRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r.GetUrl());
+        WithRequest<SolscanResponse<List<AccountStake>>>(r);
     
     /// <summary>
     /// Export the rewards for an account. Maximum items: 5000
@@ -83,7 +83,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <param name="r"></param>
     /// <returns></returns>
     public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r.GetUrl());
+        WithRequest<SolscanResponse<List<AccountStake>>>(r);
     
     /// <summary>
     /// 
@@ -92,12 +92,63 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     public Task<SolscanResponse<List<AccountStake>>> GetAccountTransportExport(AccountTransferExportRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r.GetUrl());    
+        WithRequest<SolscanResponse<List<AccountStake>>>(r);    
     #endregion
 
-    private async Task<T> WithRequest<T>(string url)
+    #region Token APIs
+    
+    #endregion
+    
+    #region NFT APIs
+    
+    #endregion
+    
+    #region Transaction APIs
+    
+    #endregion
+    
+    #region Block APIs
+    
+    #endregion
+    
+    #region Monitoring APIs
+    
+    public Task<SolscanResponse<MonitorUsageResponse>> GetMonitorUsage() =>
+        WithRequest<SolscanResponse<MonitorUsageResponse>>(new MonitorUsageRequest());
+    
+    #endregion
+    
+    #region Market APIs
+    
+    /// <summary>
+    /// Get the list of pool markets
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<PoolMarket>>> GetPoolMarketList(PoolMarketListRequest r) =>
+        WithRequest<SolscanResponse<List<PoolMarket>>>(r);
+    
+    /// <summary>
+    /// Get token market info
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<MarketInfoResponse>> GetMarketInfo(MarketInfoRequest r) =>
+        WithRequest<SolscanResponse<MarketInfoResponse>>(r);
+    
+    /// <summary>
+    /// Get the list of pool markets
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<MarketVolumeResponse>> GetMarketVolume(MarketVolumeRequest r) =>
+        WithRequest<SolscanResponse<MarketVolumeResponse>>(r);
+    
+    #endregion
+    
+    private async Task<T> WithRequest<T>(BaseRequest req)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var request = new HttpRequestMessage(HttpMethod.Get, req.GetUrl());
 
         var content = new StringContent(string.Empty);
         request.Headers.Add("token", apiKey);
