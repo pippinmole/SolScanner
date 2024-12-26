@@ -277,7 +277,7 @@ public sealed class UrlBuilder
             query.Add($"block_time[]={blockTime}");
 
         if (_excludeAmountZero != null)
-            query.Add($"exclude_amount_zero={_excludeAmountZero}");
+            query.Add($"exclude_amount_zero={_excludeAmountZero.Value.ToString().ToLowerInvariant()}");
 
         if (_removeSpam != null)
             query.Add($"remove_spam={_removeSpam}");
