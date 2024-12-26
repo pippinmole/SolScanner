@@ -194,7 +194,7 @@ public sealed class UrlBuilder
         _programAddress = programAddress;
         return this;
     }
-
+    
     public UrlBuilder WithTime(DateTime[] times)
     {
         var asString = times.Select(x => x.ToString("YYYmmDD"));
@@ -251,9 +251,6 @@ public sealed class UrlBuilder
 
         foreach (var amount in _amounts)
             query.Add($"amount[]={amount}");
-
-        foreach (var time in _times)
-            query.Add($"time[]={time}");
 
         foreach (var blockTime in _blockTimes)
             query.Add($"block_time[]={blockTime}");
