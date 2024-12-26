@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A9EE756C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolScanner", "src\SolScanner\SolScanner.csproj", "{0A9B4185-8435-4E45-A344-F23740BB0B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solscanner.Tests.Unit", "Solscanner.Tests.Unit\Solscanner.Tests.Unit.csproj", "{AC561811-8DB9-4098-A4D7-5A417B95AA71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solscanner.Tests.Unit", "tests\Solscanner.Tests.Unit\Solscanner.Tests.Unit.csproj", "{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,13 +18,13 @@ Global
 		{0A9B4185-8435-4E45-A344-F23740BB0B1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A9B4185-8435-4E45-A344-F23740BB0B1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A9B4185-8435-4E45-A344-F23740BB0B1C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC561811-8DB9-4098-A4D7-5A417B95AA71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC561811-8DB9-4098-A4D7-5A417B95AA71}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC561811-8DB9-4098-A4D7-5A417B95AA71}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC561811-8DB9-4098-A4D7-5A417B95AA71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0A9B4185-8435-4E45-A344-F23740BB0B1C} = {F44FC122-CAD3-4285-88AB-870972E9E3FC}
-		{AC561811-8DB9-4098-A4D7-5A417B95AA71} = {A9EE756C-1B3A-4313-B8FA-54C927EC8E33}
+		{D583CB90-3A45-4149-90D3-3A22AFAAC6A0} = {A9EE756C-1B3A-4313-B8FA-54C927EC8E33}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,32 @@
+name: .NET CI
+
+# Trigger workflow on pushes to main or pull requests into main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test - SolScanner.Tests.Unit
+        run: dotnet test --no-build ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj

@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\src\SolScanner\SolScanner.csproj" />
+      <ProjectReference Include="..\..\src\SolScanner\SolScanner.csproj" />
     </ItemGroup>
 
 </Project>
