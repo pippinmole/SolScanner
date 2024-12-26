@@ -29,4 +29,4 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Test - SolScanner.Tests.Unit
-        run: dotnet test --no-build ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj -e SolScan:ApiKey="${{ SOLSCAN_API_KEY }}"
+        run: dotnet test --no-build ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj -e SolScan:ApiKey="${{ secrets.API_KEY }}"
