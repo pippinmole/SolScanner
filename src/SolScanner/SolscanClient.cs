@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -95,6 +96,57 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
         WithRequest<SolscanResponse<List<AccountStake>>>(r.GetUrl());    
     #endregion
 
+    #region Token APIs
+    
+    #endregion
+    
+    #region NFT APIs
+    
+    #endregion
+    
+    #region Transaction APIs
+    
+    #endregion
+    
+    #region Block APIs
+    
+    #endregion
+    
+    #region Monitoring APIs
+    
+    public Task<SolscanResponse<MonitorUsageResponse>> GetMonitorUsage() =>
+        WithRequest<SolscanResponse<MonitorUsageResponse>>(new MonitorUsageRequest().GetUrl());
+    
+    #endregion
+    
+    #region Market APIs
+    
+    /// <summary>
+    /// Get the list of pool markets
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<PoolMarket>>> GetPoolMarketList(PoolMarketListRequest r) =>
+        WithRequest<SolscanResponse<List<PoolMarket>>>(r.GetUrl());
+    
+    /// <summary>
+    /// Get token market info
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<MarketInfoResponse>> GetMarketInfo(MarketInfoRequest r) =>
+        WithRequest<SolscanResponse<MarketInfoResponse>>(r.GetUrl());
+    
+    /// <summary>
+    /// Get the list of pool markets
+    /// </summary>
+    /// <param name="r"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<MarketVolumeResponse>> GetMarketVolume(MarketVolumeRequest r) =>
+        WithRequest<SolscanResponse<MarketVolumeResponse>>(r.GetUrl());
+    
+    #endregion
+    
     private async Task<T> WithRequest<T>(string url)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
@@ -110,6 +162,84 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
         var json = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<T>(json);
     }
+}
+
+public sealed class MarketInfoRequest : BaseRequest
+{
+    public override string GetUrl()
+    {
+        return new UrlBuilder()
+            .WithBaseUrl("https://pro-api.solscan.io/v2.0/market/info")
+            .WithAddress(Address)
+            .Build();
+    }
+
+    /// <summary>
+    /// Market Id
+    /// </summary>
+    public string Address { get; set; }
+}
+
+public sealed class MarketVolumeRequest : BaseRequest
+{
+    public override string GetUrl()
+    {
+        return new UrlBuilder()
+            .WithBaseUrl("https://pro-api.solscan.io/v2.0/market/volume")
+            .WithAddress(Address)
+            .WithTime(Times)
+            .Build();
+    }
+
+    /// <summary>
+    /// Used when you want to filter data by time.
+    /// </summary>
+    public DateTime[] Times { get; set; }
+
+    /// <summary>
+    /// Market Id
+    /// </summary>
+    public string Address { get; set; }
+}
+
+public sealed class PoolMarketListRequest : BaseRequest
+{
+    public override string GetUrl()
+    {
+        return new UrlBuilder()
+            .WithBaseUrl("https://pro-api.solscan.io/v2.0/market/list")
+            .WithSortBy(SortBy)
+            .WithSortOrder(SortOrder)
+            .WithPage(Page)
+            .WithPageSize(PageSize)
+            .WithProgramAddress(ProgramAddress)
+            .Build();
+    }
+
+    /// <summary>
+    /// Program owner address
+    /// </summary>
+    public string ProgramAddress { get; set; }
+
+    /// <summary>
+    /// Number items per page
+    /// </summary>
+    public uint PageSize { get; set; }
+
+    /// <summary>
+    /// Page number for pagination
+    /// </summary>
+    public uint Page { get; set; }
+
+    /// <summary>
+    /// The parameter allows you to specify the sort order
+    /// </summary>
+    public string SortOrder { get; set; }
+
+    /// <summary>
+    /// The parameter allows you to specify the field by which the returned list of pools will be sorted. Enum: created_time
+    /// </summary>
+    public string SortBy { get; set; }
 }
 
 public interface ISolscanClient;
