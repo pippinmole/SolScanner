@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A9EE756C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolScanner", "src\SolScanner\SolScanner.csproj", "{0A9B4185-8435-4E45-A344-F23740BB0B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solscanner.Tests.Unit", "tests\Solscanner.Tests.Unit\Solscanner.Tests.Unit.csproj", "{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Solscanner.Tests.Unit", "tests\Solscanner.Tests.Unit\SolScanner.Tests.Unit.csproj", "{D583CB90-3A45-4149-90D3-3A22AFAAC6A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
