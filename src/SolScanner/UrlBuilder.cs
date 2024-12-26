@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
 
 namespace SolScanner;
 
@@ -15,14 +16,21 @@ public sealed class UrlBuilder
     private string _token;
     private readonly List<uint> _amounts = [];
     private readonly List<uint> _blockTimes = [];
-    private bool _excludeAmountZero;
+    private bool? _excludeAmountZero;
     private string _flow;
     private uint _page;
     private uint _pageSize;
     private string _sortBy;
     private string _sortOrder;
     private string _tokenType;
-    private bool? _hideZero = null;
+    private bool? _hideZero;
+    private string[] _platforms = [];
+    private string[] _sourceAddresses = [];
+    private string _before;
+    private string _limit;
+    private bool? _removeSpam;
+    private uint _timeFrom;
+    private uint _timeTo;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -113,16 +121,68 @@ public sealed class UrlBuilder
         _sortOrder = sortOrder;
         return this;
     }
-    
+
     public UrlBuilder WithTokenType(ETokenType tokenType)
     {
         _tokenType = tokenType.ToString();
         return this;
     }
-    
+
     public UrlBuilder WithHideZero(bool hideZero)
     {
         _hideZero = hideZero;
+        return this;
+    }
+
+    public UrlBuilder WithPlatforms(string[] platforms)
+    {
+        _platforms = platforms;
+        return this;
+    }
+
+    public UrlBuilder WithBefore(string before)
+    {
+        _before = before;
+        return this;
+    }
+
+    public UrlBuilder WithLimit(ELimit limit)
+    {
+        var asString = limit switch
+        {
+            ELimit.Ten => "10",
+            ELimit.Twenty => "20",
+            ELimit.Thirty => "30",
+            ELimit.Fourty => "40",
+            _ => throw new ArgumentOutOfRangeException(nameof(limit), limit, null)
+        };
+
+        _limit = asString;
+
+        return this;
+    }
+
+    public UrlBuilder WithSourceAddresses(string[] sources)
+    {
+        _sourceAddresses = sources;
+        return this;
+    }
+
+    public UrlBuilder WithRemoveSpam(bool removeSpam)
+    {
+        _removeSpam = removeSpam;
+        return this;
+    }
+
+    public UrlBuilder WithTimeFrom(uint timeFrom)
+    {
+        _timeFrom = timeFrom;
+        return this;
+    }
+
+    public UrlBuilder WithTimeTo(uint timeTo)
+    {
+        _timeTo = timeTo;
         return this;
     }
 
@@ -133,8 +193,20 @@ public sealed class UrlBuilder
 
         var query = new List<string>();
 
+        foreach (var platform in _platforms)
+            query.Add($"&platform[]={platform}");
+
+        foreach (var sourceAddress in _sourceAddresses)
+            query.Add($"&source[]={sourceAddress}");
+
         if (!string.IsNullOrEmpty(_address))
             query.Add($"address={_address}");
+
+        if (!string.IsNullOrEmpty(_before))
+            query.Add($"before={_before}");
+
+        if (!string.IsNullOrEmpty(_limit))
+            query.Add($"limit={_limit}");
 
         foreach (var activityType in _activityTypes)
             query.Add($"activity_type[]={activityType}");
@@ -157,8 +229,11 @@ public sealed class UrlBuilder
         foreach (var blockTime in _blockTimes)
             query.Add($"block_time[]={blockTime}");
 
-        if (_excludeAmountZero)
-            query.Add("exclude_amount_zero=true");
+        if (_excludeAmountZero != null)
+            query.Add($"exclude_amount_zero={_excludeAmountZero}");
+
+        if (_removeSpam != null)
+            query.Add($"remove_spam={_removeSpam}");
 
         if (!string.IsNullOrEmpty(_flow))
             query.Add($"flow={_flow}");
@@ -169,12 +244,18 @@ public sealed class UrlBuilder
         if (_pageSize > 0)
             query.Add($"page_size={_pageSize}");
 
+        if (_timeFrom > 0)
+            query.Add($"time_from={_timeFrom}");
+
+        if (_timeTo > 0)
+            query.Add($"time_to={_timeTo}");
+
         if (!string.IsNullOrEmpty(_sortBy))
             query.Add($"sort_by={_sortBy}");
 
         if (!string.IsNullOrEmpty(_sortOrder))
             query.Add($"sort_order={_sortOrder}");
-        
+
         if (!string.IsNullOrEmpty(_tokenType))
             query.Add($"type={_tokenType}");
 

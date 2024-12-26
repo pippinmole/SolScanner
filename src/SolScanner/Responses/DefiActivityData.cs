@@ -1,9 +1,10 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace SolScanner;
+namespace SolScanner.Responses;
 
-public sealed class Transfer
+public sealed class DefiActivityData
 {
     [JsonPropertyName("block_id")]
     public int BlockId { get; set; }
@@ -26,15 +27,12 @@ public sealed class Transfer
     [JsonPropertyName("to_address")]
     public string ToAddress { get; set; }
 
-    [JsonPropertyName("token_address")]
-    public string TokenAddress { get; set; }
+    [JsonPropertyName("sources")]
+    public List<string> Sources { get; set; }
 
-    [JsonPropertyName("token_decimals")]
-    public int TokenDecimals { get; set; }
+    [JsonPropertyName("platform")]
+    public string Platform { get; set; }
 
-    [JsonPropertyName("amount")]
-    public int Amount { get; set; }
-
-    [JsonPropertyName("flow")]
-    public EFlow Flow { get; set; }
+    [JsonPropertyName("amount_info")]
+    public AmountInfo AmountInfo { get; set; }
 }
