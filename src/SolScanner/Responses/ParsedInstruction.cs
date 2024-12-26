@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace SolScanner.Responses;
 
-public class ParsedInstruction
+public sealed class ParsedInstruction
 {
     [JsonPropertyName("type")]
     public string Type { get; set; }

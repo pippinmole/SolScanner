@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SolScanner.Requests;
 using ArgumentOutOfRangeException = System.ArgumentOutOfRangeException;
 
 namespace SolScanner;
@@ -34,6 +35,8 @@ public sealed class UrlBuilder
     private string _programAddress;
     private List<string> _times;
     private uint _blockNumber;
+    private string _filter;
+    private string _tx;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -151,7 +154,7 @@ public sealed class UrlBuilder
 
     public UrlBuilder WithLimit(ELimit limit)
     {
-        var asString = limit switch
+        _limit = limit switch
         {
             ELimit.Ten => "10",
             ELimit.Twenty => "20",
@@ -159,8 +162,6 @@ public sealed class UrlBuilder
             ELimit.Fourty => "40",
             _ => throw new ArgumentOutOfRangeException(nameof(limit), limit, null)
         };
-
-        _limit = asString;
 
         return this;
     }
@@ -209,6 +210,23 @@ public sealed class UrlBuilder
         return this;
     }
     
+    public UrlBuilder WithFilter(EFilter filter)
+    {
+        _filter = filter switch
+        {
+            EFilter.ExceptVote => "exceptVote",
+            EFilter.All => "all",
+            _ => throw new ArgumentOutOfRangeException(nameof(filter), filter, null)
+        };
+        return this;
+    }
+
+    public UrlBuilder WithTx(string tx)
+    {
+        _tx = tx;
+        return this;
+    }
+    
     public string Build()
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -229,7 +247,10 @@ public sealed class UrlBuilder
             query.Add($"before={_before}");
 
         if (!string.IsNullOrEmpty(_limit))
-            query.Add($"limit={_limit}");
+            query.Add($"limit={_limit}");     
+        
+        if (!string.IsNullOrEmpty(_tx))
+            query.Add($"tx={_tx}");
 
         if (!string.IsNullOrEmpty(_programAddress))
             query.Add($"program={_programAddress}");
