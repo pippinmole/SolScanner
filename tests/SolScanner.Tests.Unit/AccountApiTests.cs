@@ -274,4 +274,87 @@ internal sealed class AccountApiTests
             Assert.That(result.Data[0].AmountInfo.Amount2, Is.EqualTo(503392));
         });
     }
+    
+        [Test]
+    public async Task GetAccountBalanceChangeActivities_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "block_id": 245299423,
+                                              "block_time": 1706718634,
+                                              "time": "2024-01-31T16:30:34.000Z",
+                                              "trans_id": "2njDKnCCqM9XEsN3TxqbQdPMg6sTSijevfoinsSMg1hZMhn2ubFCtHRR6ux9huLKd7hAPMxCGKJqZ2wcNveoQyDS",
+                                              "address": "9KR7WY8ebL5jD99tmzi3RFmk4v4ahwwHQKdqpG47Vsrg",
+                                              "token_address": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+                                              "token_account": "FSmkHGcjmGuQaB2aKBqnsg35aajitvqjDWiJi9PdFpxB",
+                                              "token_decimals": 6,
+                                              "amount": 200000000,
+                                              "pre_balance": 0,
+                                              "post_balance": 200000000,
+                                              "change_type": "inc",
+                                              "fee": 1005000
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/account/balance_change?address=GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC&token=AtDQpv27wsScSqpMFtTZvhXo6C3PcLnxa5X8YZqjh6ar&amount[]=1&amount[]=2&block_time[]=1720153259&block_time[]=1720153276&remove_spam=true&flow=in&page=1337&page_size=20&sort_by=block_time&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new AccountBalanceChangeActivitiesRequest
+        {
+            Address = "GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC",
+            Token = "AtDQpv27wsScSqpMFtTZvhXo6C3PcLnxa5X8YZqjh6ar",
+            BlockTimes = [1720153259, 1720153276],
+            PageSize = 20,
+            Page = 1337,
+            RemoveSpam = true,
+            Amounts = [1, 2],
+            Flow = EFlow.In,
+            SortBy = "block_time",
+            SortOrder = "desc",
+        };
+        var result = await apiClient.GetAccountBalanceChangeActivities(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].BlockId, Is.EqualTo(245299423));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1706718634));
+            Assert.That(result.Data[0].Time.ToUniversalTime(),
+                Is.EqualTo(DateTime.Parse("2024-01-31T16:30:34.000Z").ToUniversalTime()));
+            Assert.That(result.Data[0].TransId, Is.EqualTo("2njDKnCCqM9XEsN3TxqbQdPMg6sTSijevfoinsSMg1hZMhn2ubFCtHRR6ux9huLKd7hAPMxCGKJqZ2wcNveoQyDS"));
+            Assert.That(result.Data[0].Address, Is.EqualTo("9KR7WY8ebL5jD99tmzi3RFmk4v4ahwwHQKdqpG47Vsrg"));
+            Assert.That(result.Data[0].TokenAddress, Is.EqualTo("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"));
+            Assert.That(result.Data[0].TokenAccount, Is.EqualTo("FSmkHGcjmGuQaB2aKBqnsg35aajitvqjDWiJi9PdFpxB"));
+            Assert.That(result.Data[0].TokenDecimals, Is.EqualTo(6));
+            Assert.That(result.Data[0].Amount, Is.EqualTo(200000000));
+            Assert.That(result.Data[0].PreBalance, Is.EqualTo(0));
+            Assert.That(result.Data[0].PostBalance, Is.EqualTo(200000000));
+            Assert.That(result.Data[0].ChangeType, Is.EqualTo("inc"));
+            Assert.That(result.Data[0].Fee, Is.EqualTo(1005000));
+        });
+    }
 }

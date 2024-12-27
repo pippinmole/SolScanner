@@ -6,41 +6,41 @@ namespace SolScanner.Responses;
 public sealed class BalanceChangeActivity
 {
     [JsonPropertyName("block_id")]
-    public int block_id { get; set; }
+    public int BlockId { get; set; }
 
     [JsonPropertyName("block_time")]
-    public int block_time { get; set; }
+    public int BlockTime { get; set; }
 
     [JsonPropertyName("time")]
-    public DateTime time { get; set; }
+    public DateTime Time { get; set; }
 
     [JsonPropertyName("trans_id")]
-    public string trans_id { get; set; }
+    public string TransId { get; set; }
 
     [JsonPropertyName("address")]
-    public string address { get; set; }
+    public string Address { get; set; }
 
     [JsonPropertyName("token_address")]
-    public string token_address { get; set; }
+    public string TokenAddress { get; set; }
 
     [JsonPropertyName("token_account")]
-    public string token_account { get; set; }
+    public string TokenAccount { get; set; }
 
     [JsonPropertyName("token_decimals")]
-    public int token_decimals { get; set; }
+    public int TokenDecimals { get; set; }
 
     [JsonPropertyName("amount")]
-    public int amount { get; set; }
+    public int Amount { get; set; }
 
     [JsonPropertyName("pre_balance")]
-    public int pre_balance { get; set; }
+    public int PreBalance { get; set; }
 
     [JsonPropertyName("post_balance")]
-    public int post_balance { get; set; }
+    public int PostBalance { get; set; }
 
     [JsonPropertyName("change_type")]
-    public string change_type { get; set; }
+    public string ChangeType { get; set; }
 
     [JsonPropertyName("fee")]
-    public int fee { get; set; }
+    public int Fee { get; set; }
 }
