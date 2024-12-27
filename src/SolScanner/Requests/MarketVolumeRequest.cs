@@ -9,7 +9,7 @@ public sealed class MarketVolumeRequest : BaseRequest
         return new UrlBuilder()
             .WithBaseUrl("https://pro-api.solscan.io/v2.0/market/volume")
             .WithAddress(Address)
-            .WithTime(Times)
+            .WithTimes(Times)
             .Build();
     }
 

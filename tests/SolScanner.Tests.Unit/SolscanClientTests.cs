@@ -67,7 +67,7 @@ internal sealed class SolscanClientTests
             Page = 1337,
             PageSize = 20,
             SortBy = "block_time",
-            SortOrder = "desc"
+            SortOrder = ESortOrder.Descending
         };
         var result = await apiClient.GetAccountTransfer(request);
 
@@ -833,7 +833,8 @@ internal sealed class SolscanClientTests
                 "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH",
                 "ComputeBudget111111111111111111111111111111"
             ]));
-            Assert.That(result.Data[0].Time.ToUniversalTime(), Is.EqualTo(DateTime.Parse("2024-08-09T09:01:24.000Z").ToUniversalTime()));
+            Assert.That(result.Data[0].Time.ToUniversalTime(),
+                Is.EqualTo(DateTime.Parse("2024-08-09T09:01:24.000Z").ToUniversalTime()));
         });
     }
 
@@ -853,7 +854,220 @@ internal sealed class SolscanClientTests
 
     #region Market APIs
 
+    [Test]
+    public async Task GetPoolMarketList_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "pool_address": "FpCMFDFGYotvufJ7HrFHsWEiiQCGbkLCtwHiDnh7o28Q",
+                                              "program_id": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+                                              "token1": "So11111111111111111111111111111111111111112",
+                                              "token1_account": "6mQ8xEaHdTikyMvvMxUctYch6dUjnKgfoeib2msyMMi1",
+                                              "token2": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                                              "token2_account": "AQ36QRk3HAe6PHqBCtKTQnYKpt2kAagq9YoeTqUPMGHx",
+                                              "total_volume_24h": 6715996,
+                                              "total_trade_24h": 25377,
+                                              "created_time": 1719792010
+                                            },
+                                            {
+                                              "pool_address": "4eJ1jCPysCrEH53VUAxgNT8BMccXsgHX1nX4FxXAUVWy",
+                                              "program_id": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+                                              "token1": "USDH1SM1ojwWUga67PGrgFWUHibbjqMvuMaDkRJTgkX",
+                                              "token1_account": "2ads2xeSdmHNV8BAbZgcyPr2q1AJ24KfCZ3WNEgV25x3",
+                                              "token2": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+                                              "token2_account": "CEtPaTBXmn2zDEx1w2xt12ZxfcKWLBKzumeHCFNSuCmW",
+                                              "total_volume_24h": 956,
+                                              "total_trade_24h": 62,
+                                              "created_time": 1719792011
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
 
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/market/list?program=83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw&page=1337&page_size=20&sort_by=created_time&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
 
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new PoolMarketListRequest
+        {
+            ProgramAddress = "83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw",
+            PageSize = 20,
+            Page = 1337,
+            SortOrder = ESortOrder.Descending,
+            SortBy = EPoolSortBy.CreatedTime,
+        };
+        var result = await apiClient.GetPoolMarketList(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].PoolAddress, Is.EqualTo("FpCMFDFGYotvufJ7HrFHsWEiiQCGbkLCtwHiDnh7o28Q"));
+            Assert.That(result.Data[0].ProgramId, Is.EqualTo("whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc"));
+            Assert.That(result.Data[0].Token1, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data[0].Token1Account, Is.EqualTo("6mQ8xEaHdTikyMvvMxUctYch6dUjnKgfoeib2msyMMi1"));
+            Assert.That(result.Data[0].Token2, Is.EqualTo("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"));
+            Assert.That(result.Data[0].Token2Account, Is.EqualTo("AQ36QRk3HAe6PHqBCtKTQnYKpt2kAagq9YoeTqUPMGHx"));
+            Assert.That(result.Data[0].TotalVolume24h, Is.EqualTo(6715996));
+            Assert.That(result.Data[0].TotalTrade24h, Is.EqualTo(25377));
+            Assert.That(result.Data[0].CreatedTime, Is.EqualTo(1719792010));
+        });
+    }
+    
+    [Test]
+    public async Task GetMarketInfo_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "pool_address": "7eexH14UjhNxJe6zTT3f1Vb1E8iACsBMVaWheDEmxdT2",
+                                            "program_id": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+                                            "token1": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                                            "token2": "So11111111111111111111111111111111111111112",
+                                            "token1_account": "77MR2zLM2BQNbZhQDMx82SgRcx2vQumfMQLLfPrSio8k",
+                                            "token2_account": "9iKvd5kvcFGKAHx489rcBS3sX8nSTsouLFBvQirwNhGG",
+                                            "token1_amount": 2884919764.07666,
+                                            "token2_amount": 11135.14329621
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/market/info?address=83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new MarketInfoRequest
+        {
+            Address = "83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw"
+        };
+        var result = await apiClient.GetMarketInfo(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data.PoolAddress, Is.EqualTo("7eexH14UjhNxJe6zTT3f1Vb1E8iACsBMVaWheDEmxdT2"));
+            Assert.That(result.Data.ProgramId, Is.EqualTo("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"));
+            Assert.That(result.Data.Token1, Is.EqualTo("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"));
+            Assert.That(result.Data.Token1Account, Is.EqualTo("77MR2zLM2BQNbZhQDMx82SgRcx2vQumfMQLLfPrSio8k"));
+            Assert.That(result.Data.Token1Amount, Is.EqualTo(2884919764.07666));
+            Assert.That(result.Data.Token2, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data.Token2Account, Is.EqualTo("9iKvd5kvcFGKAHx489rcBS3sX8nSTsouLFBvQirwNhGG"));
+            Assert.That(result.Data.Token2Amount, Is.EqualTo(11135.14329621));
+        });
+    }
+
+    [Test]
+    public async Task GetMarketVolume_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "pool_address": "7eexH14UjhNxJe6zTT3f1Vb1E8iACsBMVaWheDEmxdT2",
+                                            "program_id": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+                                            "total_volume_24h": 2212179,
+                                            "total_volume_change_24h": -38.36077460277853,
+                                            "total_trades_24h": 4124,
+                                            "total_trades_change_24h": -31.01357904946654,
+                                            "days": [
+                                              {
+                                                "day": 20241114,
+                                                "value": 2069898
+                                              },
+                                              {
+                                                "day": 20241115,
+                                                "value": 1765762
+                                              }
+                                            ]
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/market/volume?address=83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw&time[]=20240701&time[]=20240715")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new MarketVolumeRequest
+        {
+            Address = "83Jy6CBGbueazwrEDGpzoMnbyVyoZQLEL6ZKVXKXmZUw",
+            Times = [
+                DateTime.ParseExact("20240701", "yyyyMMdd", null),
+                DateTime.ParseExact("20240715", "yyyyMMdd", null),
+            ]
+        };
+        var result = await apiClient.GetMarketVolume(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data.PoolAddress, Is.EqualTo("7eexH14UjhNxJe6zTT3f1Vb1E8iACsBMVaWheDEmxdT2"));
+            Assert.That(result.Data.ProgramId, Is.EqualTo("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"));
+            Assert.That(result.Data.TotalVolume24h, Is.EqualTo(2212179));
+            Assert.That(result.Data.TotalVolumeChange24h, Is.EqualTo(-38.36077460277853));
+            Assert.That(result.Data.TotalTrades24h, Is.EqualTo(4124));
+            Assert.That(result.Data.TotalTradesChange24h, Is.EqualTo(-31.01357904946654));
+            Assert.That(result.Data.Days, Has.Count.EqualTo(2));
+            Assert.That(result.Data.Days[0].Day, Is.EqualTo(20241114));
+            Assert.That(result.Data.Days[0].Value, Is.EqualTo(2069898));
+            Assert.That(result.Data.Days[1].Day, Is.EqualTo(20241115));
+            Assert.That(result.Data.Days[1].Value, Is.EqualTo(1765762));
+        });
+    }
+    
     #endregion
 }

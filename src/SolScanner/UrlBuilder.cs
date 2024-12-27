@@ -33,7 +33,7 @@ public sealed class UrlBuilder
     private uint _timeFrom;
     private uint _timeTo;
     private string _programAddress;
-    private List<string> _times;
+    private List<string> _times = [];
     private uint _blockNumber;
     private string _filter;
     private string _tx;
@@ -55,7 +55,7 @@ public sealed class UrlBuilder
         _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
         return this;
     }
-    
+
     public UrlBuilder WithActivityTypes(params EDefiActivityType[] activityTypes)
     {
         _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
@@ -132,7 +132,7 @@ public sealed class UrlBuilder
         _sortBy = sortBy;
         return this;
     }
-    
+
     public UrlBuilder WithSortOrder(ESortOrder sortOrder)
     {
         _sortOrder = sortOrder switch
@@ -141,7 +141,7 @@ public sealed class UrlBuilder
             ESortOrder.Descending => "desc",
             _ => throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, null)
         };
-        
+
         return this;
     }
 
@@ -228,18 +228,16 @@ public sealed class UrlBuilder
         _timeTo = timeTo;
         return this;
     }
-    
+
     public UrlBuilder WithProgramAddress(string programAddress)
     {
         _programAddress = programAddress;
         return this;
     }
-    
-    public UrlBuilder WithTime(DateTime[] times)
-    {
-        var asString = times.Select(x => x.ToString("YYYmmDD"));
 
-        _times = asString.ToList();
+    public UrlBuilder WithTimes(DateTime[] times)
+    {
+        _times = times.Select(x => x.ToString("yyyyMMdd")).ToList();
         return this;
     }
 
@@ -248,7 +246,7 @@ public sealed class UrlBuilder
         _blockNumber = blockNumber;
         return this;
     }
-    
+
     public UrlBuilder WithFilter(EFilter filter)
     {
         _filter = filter switch
@@ -265,7 +263,7 @@ public sealed class UrlBuilder
         _tx = tx;
         return this;
     }
-    
+
     public string Build()
     {
         if (string.IsNullOrEmpty(_baseUrl))
@@ -275,7 +273,7 @@ public sealed class UrlBuilder
 
         if (!string.IsNullOrEmpty(_address))
             query.Add($"address={_address}");
-        
+
         foreach (var platform in _platforms)
             query.Add($"platform[]={platform}");
 
@@ -286,8 +284,8 @@ public sealed class UrlBuilder
             query.Add($"before={_before}");
 
         if (!string.IsNullOrEmpty(_limit))
-            query.Add($"limit={_limit}");     
-        
+            query.Add($"limit={_limit}");
+
         if (!string.IsNullOrEmpty(_tx))
             query.Add($"tx={_tx}");
 
@@ -315,6 +313,9 @@ public sealed class UrlBuilder
         foreach (var blockTime in _blockTimes)
             query.Add($"block_time[]={blockTime}");
 
+        foreach (var time in _times)
+            query.Add($"time[]={time}");
+
         if (_excludeAmountZero != null)
             query.Add($"exclude_amount_zero={_excludeAmountZero.Value.ToString().ToLowerInvariant()}");
 
@@ -334,8 +335,8 @@ public sealed class UrlBuilder
             query.Add($"time_from={_timeFrom}");
 
         if (_timeTo > 0)
-            query.Add($"time_to={_timeTo}");    
-        
+            query.Add($"time_to={_timeTo}");
+
         if (_blockNumber > 0)
             query.Add($"block={_blockNumber}");
 
@@ -347,7 +348,7 @@ public sealed class UrlBuilder
 
         if (!string.IsNullOrEmpty(_tokenType))
             query.Add($"type={_tokenType}");
-        
+
         if (!string.IsNullOrEmpty(_filter))
             query.Add($"filter={_filter}");
 
