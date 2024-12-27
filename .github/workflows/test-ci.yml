@@ -26,37 +26,13 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --configuration Release --no-restore
 
       - name: Test - SolScanner.Tests.Unit
         run: dotnet test --no-build ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj -e SolScan:ApiKey="${{ secrets.API_KEY }}"
 
-  publish:
-    needs: build
-    if: github.ref == 'refs/heads/main' && success()
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
         with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Pack project
-        run: dotnet pack --configuration Release --no-restore --output ./nupkgs
-
-      - name: Publish to NuGet
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          for file in ./nupkgs/*.nupkg; do
-            dotnet nuget push "$file" \
-              --api-key "$NUGET_API_KEY" \
-              --source "https://api.nuget.org/v3/index.json"
-          done
+          name: build-artifacts
+          path: ./src/SolScanner/bin/Release/
