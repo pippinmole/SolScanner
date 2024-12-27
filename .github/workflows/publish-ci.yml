@@ -32,10 +32,8 @@ jobs:
       - name: Build SolScanner
         run: dotnet build ./src/SolScanner -c Release
         
-      - name: Publish SolScanner
-        if: github.event.inputs.publishMain == 'Y'
-        run: |
-          mkdir __out
-          dotnet pack ./src/SolScanner -c Release -o __out --no-restore
-          dotnet nuget push "./__out/*.nupkg" --skip-duplicate --no-symbols true --api-key ${{ secrets.NUGET_API_KEY }}
-          rm -rf __out
+      - name: Pack SolScanner
+        run: dotnet pack -c Release --no-build --output .
+        
+      - name: Push to NuGet
+        run: dotnet nuget push "*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
