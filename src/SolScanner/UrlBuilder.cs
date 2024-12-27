@@ -98,9 +98,14 @@ public sealed class UrlBuilder
         return this;
     }
 
-    public UrlBuilder WithFlow(string flow)
+    public UrlBuilder WithFlow(EFlow flow)
     {
-        _flow = flow;
+        _flow = flow switch
+        {
+            EFlow.In => "in",
+            EFlow.Out => "out",
+            _ => throw new ArgumentOutOfRangeException(nameof(flow), flow, null)
+        };
         return this;
     }
 
@@ -280,7 +285,7 @@ public sealed class UrlBuilder
             query.Add($"exclude_amount_zero={_excludeAmountZero.Value.ToString().ToLowerInvariant()}");
 
         if (_removeSpam != null)
-            query.Add($"remove_spam={_removeSpam}");
+            query.Add($"remove_spam={_removeSpam.Value.ToString().ToLowerInvariant()}");
 
         if (!string.IsNullOrEmpty(_flow))
             query.Add($"flow={_flow}");
@@ -311,7 +316,7 @@ public sealed class UrlBuilder
 
         if (_hideZero != null)
         {
-            query.Add($"hide_zero=${_hideZero}");
+            query.Add($"hide_zero={_hideZero.Value.ToString().ToLowerInvariant()}");
         }
 
         return $"{_baseUrl}?{string.Join("&", query)}";

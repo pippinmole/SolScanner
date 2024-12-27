@@ -16,7 +16,7 @@ public class Tests
             .Build();
 
         var apiKey = config["SolScan:ApiKey"];
-        _client = new SolscanClient(apiKey);
+        _client = new SolscanClient(apiKey, new HttpClient());
     }
 
     [Test]

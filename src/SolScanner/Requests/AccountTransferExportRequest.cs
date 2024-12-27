@@ -22,7 +22,7 @@ public sealed class AccountTransferExportRequest : BaseRequest
     /// <summary>
     /// Filter by transfer direction: in or out
     /// </summary>
-    public string Flow { get; set; }
+    public EFlow Flow { get; set; }
 
     /// <summary>
     /// Exclude transfers with zero amount

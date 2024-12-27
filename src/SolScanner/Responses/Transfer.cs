@@ -18,7 +18,7 @@ public sealed class Transfer
     public DateTime Time { get; set; }
 
     [JsonPropertyName("activity_type")]
-    public string ActivityType { get; set; }
+    public EActivityType ActivityType { get; set; }
 
     [JsonPropertyName("from_address")]
     public string FromAddress { get; set; }

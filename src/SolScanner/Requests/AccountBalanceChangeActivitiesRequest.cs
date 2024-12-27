@@ -32,7 +32,7 @@ public sealed class AccountBalanceChangeActivitiesRequest : BaseRequest
     /// <summary>
     /// Filter by change direction: in or out
     /// </summary>
-    public string Flow { get; set; }
+    public EFlow Flow { get; set; }
 
     /// <summary>
     /// Filter by amount range for a specific token. Example: [1, So11111111111111111111111111111111111111112]

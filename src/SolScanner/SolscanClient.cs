@@ -8,10 +8,8 @@ using SolScanner.Responses;
 
 namespace SolScanner;
 
-public sealed class SolscanClient(string apiKey) : ISolscanClient
+public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanClient
 {
-    private readonly HttpClient _client = new();
-
     #region Free Tier
 
     public Task<SolscanResponse<ChainInformation>> GetChainInformation() =>
@@ -26,16 +24,16 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<Transfer>> GetAccountTransfer(AccountTransferRequest r) =>
-        WithRequest<SolscanResponse<Transfer>>(r);
+    public Task<SolscanResponse<List<Transfer>>> GetAccountTransfer(AccountTransferRequest r) =>
+        WithRequest<SolscanResponse<List<Transfer>>>(r);
 
     /// <summary>
     /// Get token accounts of an account
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<TokenAccountData>> GetAccountTokenAccounts(AccountTokenAccountsRequest r) => 
-        WithRequest<SolscanResponse<TokenAccountData>>(r);
+    public Task<SolscanResponse<List<TokenAccountData>>> GetAccountTokenAccounts(AccountTokenAccountsRequest r) => 
+        WithRequest<SolscanResponse<List<TokenAccountData>>>(r);
 
     /// <summary>
     /// Get defi activities involving an account
@@ -195,7 +193,7 @@ public sealed class SolscanClient(string apiKey) : ISolscanClient
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         request.Content = content;
 
-        var response = await _client.SendAsync(request);
+        var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync();

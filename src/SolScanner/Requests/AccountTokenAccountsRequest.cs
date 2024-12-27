@@ -11,7 +11,7 @@ public sealed class AccountTokenAccountsRequest : BaseRequest
     public override string GetUrl()
     {
         return new UrlBuilder()
-            .WithBaseUrl("https://pro-api.solscan.io/v2.0/account/transfer")
+            .WithBaseUrl("https://pro-api.solscan.io/v2.0/account/token-accounts")
             .WithAddress(Address)
             .WithTokenType(TokenType)
             .WithPage(Page)

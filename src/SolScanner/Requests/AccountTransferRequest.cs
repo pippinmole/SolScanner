@@ -33,7 +33,7 @@ public sealed class AccountTransferRequest : BaseRequest
     public string Token { get; set; }
     
     /// <summary>
-    /// Filter by amount range for a specific token. Example: ?amount[]=1&amount[]=2&token=So11111111111111111111111111111111111111112
+    /// Filter by amount range for a specific token. Example: [1, 2]
     /// </summary>
     public uint[] Amount { get; set; }
     
@@ -50,7 +50,7 @@ public sealed class AccountTransferRequest : BaseRequest
     /// <summary>
     /// Filter by transfer direction: in or out. <see cref="EFlow"/>
     /// </summary>
-    public string Flow { get; set; }
+    public EFlow Flow { get; set; }
     
     /// <summary>
     /// Page number for pagination
@@ -66,7 +66,9 @@ public sealed class AccountTransferRequest : BaseRequest
     /// The parameter allows you to specify the field by which the returned list will be sorted
     /// </summary>
     public string SortOrder { get; set; }
-    
+
+    public string SortBy { get; set; }
+
     public override string GetUrl()
     {
         return new UrlBuilder()
@@ -83,6 +85,7 @@ public sealed class AccountTransferRequest : BaseRequest
             .WithFlow(Flow)
             .WithPage(Page)
             .WithPageSize(PageSize)
+            .WithSortBy(SortBy)
             .WithSortOrder(SortOrder)
             .Build();
     }
