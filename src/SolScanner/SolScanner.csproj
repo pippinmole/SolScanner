@@ -7,11 +7,12 @@
         <Authors>pippin_mole</Authors>
         <Description>A .NET library which wraps the Solscan API</Description>
         <PackageProjectUrl>https://github.com/pippinmole/SolScannerr</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/pippinmole/SolScanner/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/pippinmole/SolScanner</RepositoryUrl>
         <PackageTags>solscan,crypto,api,wrapper,.net</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageVersion>1.0.1</PackageVersion>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
