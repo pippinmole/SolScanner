@@ -132,6 +132,28 @@ public sealed class UrlBuilder
         _sortBy = sortBy;
         return this;
     }
+    
+    public UrlBuilder WithSortOrder(ESortOrder sortOrder)
+    {
+        _sortOrder = sortOrder switch
+        {
+            ESortOrder.Ascending => "asc",
+            ESortOrder.Descending => "desc",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortOrder), sortOrder, null)
+        };
+        
+        return this;
+    }
+
+    public UrlBuilder WithSortBy(EPoolSortBy sortBy)
+    {
+        _sortBy = sortBy switch
+        {
+            EPoolSortBy.CreatedTime => "created_time",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null)
+        };
+        return this;
+    }
 
     public UrlBuilder WithSortOrder(string sortOrder)
     {

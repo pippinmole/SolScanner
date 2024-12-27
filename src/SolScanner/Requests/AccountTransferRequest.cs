@@ -65,7 +65,7 @@ public sealed class AccountTransferRequest : BaseRequest
     /// <summary>
     /// The parameter allows you to specify the field by which the returned list will be sorted
     /// </summary>
-    public string SortOrder { get; set; }
+    public ESortOrder SortOrder { get; set; }
 
     public string SortBy { get; set; }
 

@@ -32,10 +32,21 @@ public sealed class PoolMarketListRequest : BaseRequest
     /// <summary>
     /// The parameter allows you to specify the sort order
     /// </summary>
-    public string SortOrder { get; set; }
+    public ESortOrder SortOrder { get; set; }
 
     /// <summary>
     /// The parameter allows you to specify the field by which the returned list of pools will be sorted. Enum: created_time
     /// </summary>
-    public string SortBy { get; set; }
+    public EPoolSortBy SortBy { get; set; }
+}
+
+public enum ESortOrder
+{
+    Ascending,
+    Descending
+}
+
+public enum EPoolSortBy
+{
+    CreatedTime
 }
