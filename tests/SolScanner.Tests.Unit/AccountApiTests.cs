@@ -274,8 +274,8 @@ internal sealed class AccountApiTests
             Assert.That(result.Data[0].AmountInfo.Amount2, Is.EqualTo(503392));
         });
     }
-    
-        [Test]
+
+    [Test]
     public async Task GetAccountBalanceChangeActivities_WithValidRequest_ReturnsAccountTransfer()
     {
         // Arrange
@@ -345,7 +345,8 @@ internal sealed class AccountApiTests
             Assert.That(result.Data[0].BlockTime, Is.EqualTo(1706718634));
             Assert.That(result.Data[0].Time.ToUniversalTime(),
                 Is.EqualTo(DateTime.Parse("2024-01-31T16:30:34.000Z").ToUniversalTime()));
-            Assert.That(result.Data[0].TransId, Is.EqualTo("2njDKnCCqM9XEsN3TxqbQdPMg6sTSijevfoinsSMg1hZMhn2ubFCtHRR6ux9huLKd7hAPMxCGKJqZ2wcNveoQyDS"));
+            Assert.That(result.Data[0].TransId,
+                Is.EqualTo("2njDKnCCqM9XEsN3TxqbQdPMg6sTSijevfoinsSMg1hZMhn2ubFCtHRR6ux9huLKd7hAPMxCGKJqZ2wcNveoQyDS"));
             Assert.That(result.Data[0].Address, Is.EqualTo("9KR7WY8ebL5jD99tmzi3RFmk4v4ahwwHQKdqpG47Vsrg"));
             Assert.That(result.Data[0].TokenAddress, Is.EqualTo("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"));
             Assert.That(result.Data[0].TokenAccount, Is.EqualTo("FSmkHGcjmGuQaB2aKBqnsg35aajitvqjDWiJi9PdFpxB"));
@@ -355,6 +356,179 @@ internal sealed class AccountApiTests
             Assert.That(result.Data[0].PostBalance, Is.EqualTo(200000000));
             Assert.That(result.Data[0].ChangeType, Is.EqualTo("inc"));
             Assert.That(result.Data[0].Fee, Is.EqualTo(1005000));
+        });
+    }
+
+    [Test]
+    public async Task GetAccountTransactions_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "slot": 282450328,
+                                              "fee": 60601,
+                                              "status": "Fail",
+                                              "signer": [
+                                                "ob2htHLoCu2P6tX7RrNVtiG1mYTas8NGJEVLaFEUngk"
+                                              ],
+                                              "block_time": 1723176170,
+                                              "tx_hash": "2k5SKZo9tAgK3w24EozcCSm1doWLmqoFTe8UeSHd2pp7KJbsH4pRdM78hwfDsSTEC7edJtNYAEGryZe5L1uxU5DU",
+                                              "parsed_instructions": [
+                                                {
+                                                  "type": "cancelAllAndPlaceOrders",
+                                                  "program": "openbook_v2",
+                                                  "program_id": "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"
+                                                },
+                                                {
+                                                  "type": "settleFunds",
+                                                  "program": "openbook_v2",
+                                                  "program_id": "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"
+                                                }
+                                              ],
+                                              "program_ids": [
+                                                "ComputeBudget111111111111111111111111111111",
+                                                "GDDMwNyyx8uB6zrqwBFHjLLG3TBYk2F8Az4yrQC5RzMp",
+                                                "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"
+                                              ],
+                                              "time": "2024-08-09T04:02:50.000Z"
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/account/transactions?address=GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC&before=2HY1yJ54GHRDR1jGLKQMi4xNR4cx488xeHK87z4Lh16c&limit=40")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new AccountTransactionsRequest
+        {
+            Address = "GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC",
+            Before = "2HY1yJ54GHRDR1jGLKQMi4xNR4cx488xeHK87z4Lh16c",
+            Limit = ELimit.Fourty,
+        };
+        var result = await apiClient.GetAccountTransactions(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Slot, Is.EqualTo(282450328));
+            Assert.That(result.Data[0].Fee, Is.EqualTo(60601));
+            Assert.That(result.Data[0].Status, Is.EqualTo("Fail"));
+            Assert.That(result.Data[0].Signer, Is.EqualTo(["ob2htHLoCu2P6tX7RrNVtiG1mYTas8NGJEVLaFEUngk"]));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1723176170));
+            Assert.That(result.Data[0].TxHash,
+                Is.EqualTo("2k5SKZo9tAgK3w24EozcCSm1doWLmqoFTe8UeSHd2pp7KJbsH4pRdM78hwfDsSTEC7edJtNYAEGryZe5L1uxU5DU"));
+            Assert.That(result.Data[0].ParsedInstructions, Is.Not.Null);
+            Assert.That(result.Data[0].ParsedInstructions, Is.Not.Empty);
+            Assert.That(result.Data[0].ParsedInstructions[0].Type, Is.EqualTo("cancelAllAndPlaceOrders"));
+            Assert.That(result.Data[0].ParsedInstructions[0].Program, Is.EqualTo("openbook_v2"));
+            Assert.That(result.Data[0].ParsedInstructions[0].ProgramId,
+                Is.EqualTo("opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"));
+
+            Assert.That(result.Data[0].ParsedInstructions[1].Type, Is.EqualTo("settleFunds"));
+            Assert.That(result.Data[0].ParsedInstructions[1].Program, Is.EqualTo("openbook_v2"));
+            Assert.That(result.Data[0].ParsedInstructions[1].ProgramId,
+                Is.EqualTo("opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb"));
+
+            Assert.That(result.Data[0].Time.ToUniversalTime(),
+                Is.EqualTo(DateTime.Parse("2024-08-09T04:02:50.000Z").ToUniversalTime()));
+        });
+    }
+
+    [Test]
+    public async Task GetAccountStakes_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "amount": 458814660465801,
+                                              "role": [
+                                                "staker",
+                                                "withdrawer"
+                                              ],
+                                              "status": "active",
+                                              "type": "active",
+                                              "voter": "J1to1yufRnoWn81KYg1XkTWzmKjnYSnmE2VY8DGUJ9Qv",
+                                              "active_stake_amount": 458814660465801,
+                                              "delegated_stake_amount": 458814660465801,
+                                              "sol_balance": 460943646092406,
+                                              "total_reward": "57305913856583",
+                                              "stake_account": "2P8jAu5woVjL7wWPGTdeKgybtHnVM5UDAHQTF6F4gqNn",
+                                              "activation_epoch": 522,
+                                              "stake_type": 522
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/account/stake?address=GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC&page=1337&page_size=20")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new AccountStakesRequest
+        {
+            Address = "GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC",
+            Page = 1337,
+            PageSize = 20,
+        };
+        var result = await apiClient.GetAccountStakes(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Amount, Is.EqualTo(458814660465801));
+            Assert.That(result.Data[0].Role, Contains.Item("staker"));
+            Assert.That(result.Data[0].Role, Contains.Item("withdrawer"));
+            Assert.That(result.Data[0].Status, Is.EqualTo("active"));
+            Assert.That(result.Data[0].Type, Is.EqualTo("active"));
+            Assert.That(result.Data[0].Voter, Is.EqualTo("J1to1yufRnoWn81KYg1XkTWzmKjnYSnmE2VY8DGUJ9Qv"));
+            Assert.That(result.Data[0].ActiveStakeAmount, Is.EqualTo(458814660465801));
+            Assert.That(result.Data[0].DelegatedStakeAmount, Is.EqualTo(458814660465801));
+            Assert.That(result.Data[0].SolBalance, Is.EqualTo(460943646092406));
+            Assert.That(result.Data[0].TotalReward, Is.EqualTo("57305913856583"));
+            Assert.That(result.Data[0].StakeAccount, Is.EqualTo("2P8jAu5woVjL7wWPGTdeKgybtHnVM5UDAHQTF6F4gqNn"));
+            Assert.That(result.Data[0].ActivationEpoch, Is.EqualTo(522));
+            Assert.That(result.Data[0].StakeType, Is.EqualTo(522));
         });
     }
 }

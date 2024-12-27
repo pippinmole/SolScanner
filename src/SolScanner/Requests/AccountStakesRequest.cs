@@ -20,6 +20,7 @@ public sealed class AccountStakesRequest : BaseRequest
     public override string GetUrl()
     {
         return new UrlBuilder()
+            .WithBaseUrl("https://pro-api.solscan.io/v2.0/account/stake")
             .WithAddress(Address)
             .WithPage(Page)
             .WithPageSize(PageSize)
