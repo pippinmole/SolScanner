@@ -6,20 +6,10 @@ using SolScanner.Requests;
 
 namespace Solscanner.Tests.Unit;
 
-internal sealed class TestHttpMessageHandler(
-    Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> sendAsync)
-    : HttpMessageHandler
+internal sealed class SolscanClientTests
 {
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-        CancellationToken cancellationToken)
-    {
-        return sendAsync(request, cancellationToken);
-    }
-}
+    #region Account APIs
 
-
-internal sealed class AccountApiTests
-{
     [Test]
     public async Task GetAccountTransfer_WithValidRequest_ReturnsAccountTransfer()
     {
@@ -708,4 +698,162 @@ internal sealed class AccountApiTests
     //         Assert.That(result.Data.IsOncurve, Is.EqualTo(true));
     //     });
     // }
+
+    #endregion
+
+    #region Token APIs
+
+    #endregion
+
+    #region NFT APIs
+
+    #endregion
+
+    #region Transaction APIs
+
+    [Test]
+    public async Task GetLastTransactions_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "slot": 282493339,
+                                              "fee": 5400,
+                                              "status": "Success",
+                                              "signer": [
+                                                "28FBsXoAH8BPy8RT7RZtb8SMoJUVCPWVtZMeskxe6sPg"
+                                              ],
+                                              "block_time": 1723194084,
+                                              "tx_hash": "61zYZzrAR5HAdXyg41QpjoaZxL79aunWUhfxBtcSNGC6s11eHyTKCb3au6wNad1JddMAbATKTgoWPnooqeebc7KV",
+                                              "parsed_instructions": [
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                },
+                                                {
+                                                  "type": "addProduct",
+                                                  "program": "Pyth",
+                                                  "program_id": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH"
+                                                }
+                                              ],
+                                              "program_ids": [
+                                                "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH",
+                                                "ComputeBudget111111111111111111111111111111"
+                                              ],
+                                              "time": "2024-08-09T09:01:24.000Z"
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/transaction/last?limit=60&filter=exceptVote")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new LastTransactionsRequest
+        {
+            Filter = EFilter.ExceptVote,
+            Limit = ELimit.Sixty,
+        };
+        var result = await apiClient.GetLastTransactions(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Slot, Is.EqualTo(282493339));
+            Assert.That(result.Data[0].Fee, Is.EqualTo(5400));
+            Assert.That(result.Data[0].Status, Is.EqualTo("Success"));
+            Assert.That(result.Data[0].Signer, Is.EqualTo(["28FBsXoAH8BPy8RT7RZtb8SMoJUVCPWVtZMeskxe6sPg"]));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1723194084));
+            Assert.That(result.Data[0].TxHash,
+                Is.EqualTo("61zYZzrAR5HAdXyg41QpjoaZxL79aunWUhfxBtcSNGC6s11eHyTKCb3au6wNad1JddMAbATKTgoWPnooqeebc7KV"));
+            Assert.That(result.Data[0].ParsedInstructions, Has.Count.EqualTo(10));
+            Assert.That(result.Data[0].ProgramIds, Is.EqualTo([
+                "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH",
+                "ComputeBudget111111111111111111111111111111"
+            ]));
+            Assert.That(result.Data[0].Time.ToUniversalTime(), Is.EqualTo(DateTime.Parse("2024-08-09T09:01:24.000Z").ToUniversalTime()));
+        });
+    }
+
+    #endregion
+
+    #region Block APIs
+
+
+
+    #endregion
+
+    #region Monitoring APIs
+
+
+
+    #endregion
+
+    #region Market APIs
+
+
+
+    #endregion
 }

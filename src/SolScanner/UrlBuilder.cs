@@ -171,6 +171,12 @@ public sealed class UrlBuilder
             ELimit.Twenty => "20",
             ELimit.Thirty => "30",
             ELimit.Fourty => "40",
+            ELimit.Fifty => "50",
+            ELimit.Sixty => "60",
+            ELimit.Seventy => "70",
+            ELimit.Eighty => "80",
+            ELimit.Ninety => "90",
+            ELimit.OneHundred => "100",
             _ => throw new ArgumentOutOfRangeException(nameof(limit), limit, null)
         };
 
@@ -319,6 +325,9 @@ public sealed class UrlBuilder
 
         if (!string.IsNullOrEmpty(_tokenType))
             query.Add($"type={_tokenType}");
+        
+        if (!string.IsNullOrEmpty(_filter))
+            query.Add($"filter={_filter}");
 
         if (_hideZero != null)
         {

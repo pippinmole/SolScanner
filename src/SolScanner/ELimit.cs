@@ -9,7 +9,7 @@ public enum ELimit
     Fifty = 50,
     Sixty = 60,
     Seventy = 70,
-    Eighty = 70,
-    Ninety = 80,
-    OneHundred = 90,
+    Eighty = 80,
+    Ninety = 90,
+    OneHundred = 100,
 }
