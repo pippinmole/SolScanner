@@ -590,4 +590,122 @@ internal sealed class AccountApiTests
             Assert.That(result.Data.IsOncurve, Is.EqualTo(true));
         });
     }
+
+    // [Test]
+    // public async Task GetAccountRewardsExport_WithValidRequest_ReturnsAccountTransfer()
+    // {
+    //     // Arrange
+    //     var fakeResponse = new HttpResponseMessage
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Content = new StringContent("""
+    //                                     {
+    //                                       "success": true,
+    //                                       "data": {
+    //                                         "account": "2YcwVbKx9L25Jpaj2vfWSXD5UKugZumWjzEe6suBUJi2",
+    //                                         "lamports": 11934280,
+    //                                         "type": "system_account",
+    //                                         "executable": false,
+    //                                         "owner_program": "11111111111111111111111111111111",
+    //                                         "rent_epoch": 18446744073709552000,
+    //                                         "is_oncurve": true
+    //                                       }
+    //                                     }
+    //                                     """)
+    //     };
+    //
+    //     var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+    //     {
+    //         Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+    //         Assert.That(request.RequestUri,
+    //             Is.EqualTo(new Uri(
+    //                 "https://pro-api.solscan.io/v2.0/account/reward/export?address=GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC&time_from=1735261949&time_to=1703639549")));
+    //         return Task.FromResult(fakeResponse);
+    //     });
+    //
+    //     var httpClient = new HttpClient(handler);
+    //     var apiClient = new SolscanClient("", httpClient);
+    //
+    //     // Act
+    //     var request = new AccountRewardsExportRequest
+    //     {
+    //         Address = "GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC",
+    //         TimeFrom = 1735261949,
+    //         TimeTo = 1703639549
+    //     };
+    //     var result = await apiClient.GetAccountRewardsExport(request);
+    //
+    //     // Assert
+    //     Assert.Multiple(() =>
+    //     {
+    //         Assert.That(result, Is.Not.Null);
+    //         Assert.That(result.Success, Is.True);
+    //         Assert.That(result.Data, Is.Not.Null);
+    //         Assert.That(result.Data.Account, Is.EqualTo("2YcwVbKx9L25Jpaj2vfWSXD5UKugZumWjzEe6suBUJi2"));
+    //         Assert.That(result.Data.Lamports, Is.EqualTo(11934280));
+    //         Assert.That(result.Data.Type, Is.EqualTo("system_account"));
+    //         Assert.That(result.Data.Executable, Is.EqualTo(false));
+    //         Assert.That(result.Data.OwnerProgram, Is.EqualTo("11111111111111111111111111111111"));
+    //         Assert.That(result.Data.RentEpoch, Is.EqualTo(BigInteger.Parse("18446744073709552000")));
+    //         Assert.That(result.Data.IsOncurve, Is.EqualTo(true));
+    //     });
+    // }
+    //
+    // [Test]
+    // public async Task GetAccountTransportExport_WithValidRequest_ReturnsAccountTransfer()
+    // {
+    //     // Arrange
+    //     var fakeResponse = new HttpResponseMessage
+    //     {
+    //         StatusCode = HttpStatusCode.OK,
+    //         Content = new StringContent("""
+    //                                     {
+    //                                       "success": true,
+    //                                       "data": {
+    //                                         "account": "2YcwVbKx9L25Jpaj2vfWSXD5UKugZumWjzEe6suBUJi2",
+    //                                         "lamports": 11934280,
+    //                                         "type": "system_account",
+    //                                         "executable": false,
+    //                                         "owner_program": "11111111111111111111111111111111",
+    //                                         "rent_epoch": 18446744073709552000,
+    //                                         "is_oncurve": true
+    //                                       }
+    //                                     }
+    //                                     """)
+    //     };
+    //
+    //     var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+    //     {
+    //         Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+    //         Assert.That(request.RequestUri,
+    //             Is.EqualTo(new Uri(
+    //                 "https://pro-api.solscan.io/v2.0/account/detail?address=GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC")));
+    //         return Task.FromResult(fakeResponse);
+    //     });
+    //
+    //     var httpClient = new HttpClient(handler);
+    //     var apiClient = new SolscanClient("", httpClient);
+    //
+    //     // Act
+    //     var request = new AccountDetailsRequest
+    //     {
+    //         Address = "GCUEeFgWWcAouA8KvXbY235qcRvn3pQKKbPjYTrxdiiC"
+    //     };
+    //     var result = await apiClient.GetAccountTransportExport(request);
+    //
+    //     // Assert
+    //     Assert.Multiple(() =>
+    //     {
+    //         Assert.That(result, Is.Not.Null);
+    //         Assert.That(result.Success, Is.True);
+    //         Assert.That(result.Data, Is.Not.Null);
+    //         Assert.That(result.Data.Account, Is.EqualTo("2YcwVbKx9L25Jpaj2vfWSXD5UKugZumWjzEe6suBUJi2"));
+    //         Assert.That(result.Data.Lamports, Is.EqualTo(11934280));
+    //         Assert.That(result.Data.Type, Is.EqualTo("system_account"));
+    //         Assert.That(result.Data.Executable, Is.EqualTo(false));
+    //         Assert.That(result.Data.OwnerProgram, Is.EqualTo("11111111111111111111111111111111"));
+    //         Assert.That(result.Data.RentEpoch, Is.EqualTo(BigInteger.Parse("18446744073709552000")));
+    //         Assert.That(result.Data.IsOncurve, Is.EqualTo(true));
+    //     });
+    // }
 }

@@ -75,22 +75,21 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     public Task<SolscanResponse<AccountDetailsResponse>> GetAccountDetails(AccountDetailsRequest r) =>
         WithRequest<SolscanResponse<AccountDetailsResponse>>(r);
     
-    /// <summary>
-    /// Export the rewards for an account. Maximum items: 5000
-    /// </summary>
-    /// <param name="r"></param>
-    /// <returns></returns>
-    public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r);
+    // /// <summary>
+    // /// Export the rewards for an account. Maximum items: 5000
+    // /// </summary>
+    // /// <param name="r"></param>
+    // /// <returns></returns>
+    // public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r) =>
+    //     WithRequest<SolscanResponse<List<AccountStake>>>(r);
     
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="url"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public Task<SolscanResponse<List<AccountStake>>> GetAccountTransportExport(AccountTransferExportRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r);    
+    // /// <summary>
+    // /// Export transfer data of an account
+    // /// </summary>
+    // /// <param name="r"></param>
+    // /// <returns></returns>
+    // public Task<SolscanResponse<List<AccountStake>>> GetAccountTransportExport(AccountTransferExportRequest r) =>
+    //     WithRequest<SolscanResponse<List<AccountStake>>>(r);    
     #endregion
 
     #region Token APIs
