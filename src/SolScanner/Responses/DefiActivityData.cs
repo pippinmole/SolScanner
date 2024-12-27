@@ -19,7 +19,7 @@ public sealed class DefiActivityData
     public DateTime Time { get; set; }
 
     [JsonPropertyName("activity_type")]
-    public string ActivityType { get; set; }
+    public EDefiActivityType ActivityType { get; set; }
 
     [JsonPropertyName("from_address")]
     public string FromAddress { get; set; }

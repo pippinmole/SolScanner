@@ -55,6 +55,12 @@ public sealed class UrlBuilder
         _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
         return this;
     }
+    
+    public UrlBuilder WithActivityTypes(params EDefiActivityType[] activityTypes)
+    {
+        _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
+        return this;
+    }
 
     public UrlBuilder WithTokenAccount(string tokenAccount)
     {
@@ -239,14 +245,14 @@ public sealed class UrlBuilder
 
         var query = new List<string>();
 
-        foreach (var platform in _platforms)
-            query.Add($"&platform[]={platform}");
-
-        foreach (var sourceAddress in _sourceAddresses)
-            query.Add($"&source[]={sourceAddress}");
-
         if (!string.IsNullOrEmpty(_address))
             query.Add($"address={_address}");
+        
+        foreach (var platform in _platforms)
+            query.Add($"platform[]={platform}");
+
+        foreach (var sourceAddress in _sourceAddresses)
+            query.Add($"source[]={sourceAddress}");
 
         if (!string.IsNullOrEmpty(_before))
             query.Add($"before={_before}");

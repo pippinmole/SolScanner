@@ -165,4 +165,113 @@ internal sealed class AccountApiTests
             Assert.That(result.Data[0].Owner, Is.EqualTo("GThUX1Atko4tqhN2NaiTazWSeFWMuiUvfFnyJyUghFMJ"));
         });
     }
+
+    [Test]
+    public async Task GetAccountDefiActivity_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "block_id": 275994804,
+                                              "trans_id": "sgccc7AnmQ7mUxk7JPVZWSqD18Dm4eaMv61jte9sWjBakck5QK3UFSLnxMAqwiTUHjF8BXvaHaLAWnzGPRi77Cr",
+                                              "block_time": 1720263055,
+                                              "time": "2024-07-06T10:50:55.000Z",
+                                              "activity_type": "ACTIVITY_AGG_TOKEN_SWAP",
+                                              "from_address": "ob2htHLoCu2P6tX7RrNVtiG1mYTas8NGJEVLaFEUngk",
+                                              "to_address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                                              "sources": [
+                                                "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"
+                                              ],
+                                              "platform": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                                              "amount_info": {
+                                                "token1": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                                                "token1_decimals": 6,
+                                                "amount1": 1000000,
+                                                "token2": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+                                                "token2_decimals": 6,
+                                                "amount2": 503392,
+                                                "routers": [
+                                                  {
+                                                    "token1": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                                                    "token1_decimals": 6,
+                                                    "amount1": "1000000",
+                                                    "token2": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+                                                    "token2_decimals": 6,
+                                                    "amount2": "503392"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/account/defi/activities?address=28rZz9qDU3svxWv75cmWJ2YoYy9wiBk7gxVrPjavYgsa&platform[]=9mXWMVboLKkkuSEYnntTeqq7sY6efmMHNAyp5v8ZXujy&platform[]=7MTKDg16kGmsHzjYrr4LScy4DnnpE2GohhLpAyKZYeFn&source[]=7MTKDg16kGmsHzjYrr4LScy4DnnpE2GohhLpAyKZYeFn&activity_type[]=ACTIVITY_TOKEN_SWAP&activity_type[]=ACTIVITY_SPL_TOKEN_WITHDRAW_STAKE&from=4UQC7Wy6WXdWfGyZS1Np1MAHfsgRy7t39EX6G3yJW5BZ&token=4gh6K59P7N5m63ynx5YEgV7Vd77PzmBPGRYAPGJn2SYv&block_time[]=1720153259&block_time[]=1720153276&page=1337&page_size=20&sort_by=block_time&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new AccountDefiActivityRequest
+        {
+            Address = "28rZz9qDU3svxWv75cmWJ2YoYy9wiBk7gxVrPjavYgsa",
+            ActivityTypes =
+                [EDefiActivityType.ACTIVITY_TOKEN_SWAP, EDefiActivityType.ACTIVITY_SPL_TOKEN_WITHDRAW_STAKE],
+            From = "4UQC7Wy6WXdWfGyZS1Np1MAHfsgRy7t39EX6G3yJW5BZ",
+            Platform =
+            [
+                "9mXWMVboLKkkuSEYnntTeqq7sY6efmMHNAyp5v8ZXujy",
+                "7MTKDg16kGmsHzjYrr4LScy4DnnpE2GohhLpAyKZYeFn"
+            ],
+            Sources = ["7MTKDg16kGmsHzjYrr4LScy4DnnpE2GohhLpAyKZYeFn"],
+            Token = "4gh6K59P7N5m63ynx5YEgV7Vd77PzmBPGRYAPGJn2SYv",
+            BlockTimes = [1720153259, 1720153276],
+            Page = 1337,
+            PageSize = 20,
+            SortBy = "block_time",
+            SortOrder = "desc",
+        };
+        var result = await apiClient.GetAccountDefiActivity(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].BlockId, Is.EqualTo(275994804));
+            Assert.That(result.Data[0].TransId,
+                Is.EqualTo("sgccc7AnmQ7mUxk7JPVZWSqD18Dm4eaMv61jte9sWjBakck5QK3UFSLnxMAqwiTUHjF8BXvaHaLAWnzGPRi77Cr"));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1720263055));
+            Assert.That(result.Data[0].Time.ToUniversalTime(),
+                Is.EqualTo(DateTime.Parse("2024-07-06T10:50:55.000Z").ToUniversalTime()));
+            Assert.That(result.Data[0].ActivityType, Is.EqualTo(EDefiActivityType.ACTIVITY_AGG_TOKEN_SWAP));
+            Assert.That(result.Data[0].FromAddress, Is.EqualTo("ob2htHLoCu2P6tX7RrNVtiG1mYTas8NGJEVLaFEUngk"));
+            Assert.That(result.Data[0].ToAddress, Is.EqualTo("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"));
+            Assert.That(result.Data[0].Sources, Is.EqualTo(["CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK"]));
+            Assert.That(result.Data[0].Platform, Is.EqualTo("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"));
+            Assert.That(result.Data[0].AmountInfo, Is.Not.Null);
+            Assert.That(result.Data[0].AmountInfo.Token1, Is.EqualTo("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"));
+            Assert.That(result.Data[0].AmountInfo.Token1Decimals, Is.EqualTo(6));
+            Assert.That(result.Data[0].AmountInfo.Amount1, Is.EqualTo(1000000));
+            Assert.That(result.Data[0].AmountInfo.Token2, Is.EqualTo("EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm"));
+            Assert.That(result.Data[0].AmountInfo.Token2Decimals, Is.EqualTo(6));
+            Assert.That(result.Data[0].AmountInfo.Amount2, Is.EqualTo(503392));
+        });
+    }
 }
