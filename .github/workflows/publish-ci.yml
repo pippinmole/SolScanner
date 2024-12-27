@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
         
+      - name: Build SolScanner
+        run: dotnet build ./src/SolScanner -c Release
+        
       - name: Publish SolScanner
         if: github.event.inputs.publishMain == 'Y'
         run: |
