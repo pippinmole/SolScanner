@@ -72,8 +72,8 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     /// </summary>
     /// <param name="r"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<AccountStake>>> GetAccountDetails(AccountDetailsRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r);
+    public Task<SolscanResponse<AccountDetailsResponse>> GetAccountDetails(AccountDetailsRequest r) =>
+        WithRequest<SolscanResponse<AccountDetailsResponse>>(r);
     
     /// <summary>
     /// Export the rewards for an account. Maximum items: 5000
