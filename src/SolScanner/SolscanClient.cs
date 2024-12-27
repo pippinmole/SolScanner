@@ -110,13 +110,13 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     public Task<SolscanResponse<List<LastTransaction>>> GetLastTransactions(LastTransactionsRequest r) =>
         WithRequest<SolscanResponse<List<LastTransaction>>>(r);
     
-    /// <summary>
-    /// Get the detail of a transaction. Return transaction data after parsed by Solscan Parser. Data will include very helpful data such as: token and sol balance changes, IDL data, defi or transfer activities of each instructions
-    /// </summary>
-    /// <param name="r"></param>
-    /// <returns></returns>
-    public Task<SolscanResponse<List<LastTransaction>>> GetTransactionDetails(TransactionDetailsRequest r) =>
-        WithRequest<SolscanResponse<List<LastTransaction>>>(r);
+    // /// <summary>
+    // /// Get the detail of a transaction. Return transaction data after parsed by Solscan Parser. Data will include very helpful data such as: token and sol balance changes, IDL data, defi or transfer activities of each instructions
+    // /// </summary>
+    // /// <param name="r"></param>
+    // /// <returns></returns>
+    // public Task<SolscanResponse<SolscanResponse<TransactionDetailsResponse>>> GetTransactionDetails(TransactionDetailsRequest r) =>
+    //     WithRequest<SolscanResponse<SolscanResponse<TransactionDetailsResponse>>>(r);
     
     #endregion
     
