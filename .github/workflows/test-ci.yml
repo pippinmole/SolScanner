@@ -26,10 +26,16 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --configuration Release --no-restore
 
       - name: Test - SolScanner.Tests.Unit
         run: dotnet test --no-build ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj -e SolScan:ApiKey="${{ secrets.API_KEY }}"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./src/SolScanner/bin/Release/
 
   publish:
     needs: build
@@ -45,11 +51,14 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./src/SolScanner/bin/Release/
 
       - name: Pack project
-        run: dotnet pack --configuration Release --no-restore --output ./nupkgs
+        run: dotnet pack --no-build --configuration Release --output ./nupkgs
 
       - name: Publish to NuGet
         env:
