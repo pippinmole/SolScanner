@@ -839,6 +839,77 @@ internal sealed class SolscanClientTests
     }
 
     [Test]
+    public async Task GetLastTransactions_WithBadRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.BadRequest,
+            Content = new StringContent("""
+                                        {
+                                          "success": false,
+                                          "errors": {
+                                            "code": 1100,
+                                            "message": "Validation Error: tx is not allowed"
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/transaction/last?limit=60&filter=exceptVote")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new LastTransactionsRequest
+        {
+            Filter = EFilter.ExceptVote,
+            Limit = ELimit.Sixty,
+        };
+        var result = await apiClient.GetLastTransactions(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Data, Is.Null);
+            Assert.That(result.Error, Is.Not.Null);
+            Assert.That(result.Error!.Code, Is.EqualTo(1100));
+            Assert.That(result.Error!.Message, Is.EqualTo("Validation Error: tx is not allowed"));
+        });
+    }
+    
+    [Test]
+    public async Task GetLastTransactions_WithAuthenticationFailed_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var httpClient = new HttpClient();
+        var apiClient = new SolscanClient("INVALID-API-KEY", httpClient);
+
+        // Act
+        var request = new LastTransactionsRequest
+        {
+            Filter = EFilter.ExceptVote,
+            Limit = ELimit.Sixty,
+        };
+        AsyncTestDelegate testDelegate = async () => await apiClient.GetLastTransactions(request);
+
+        // Assert
+        var exception = Assert.ThrowsAsync<HttpRequestException>(testDelegate);
+        Assert.That(exception, Is.Not.Null);
+        Assert.That(exception.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+    }
+
+    [Test]
     public async Task GetTransactionDetails_WithValidRequest_ReturnsAccountTransfer()
     {
         // Arrange
