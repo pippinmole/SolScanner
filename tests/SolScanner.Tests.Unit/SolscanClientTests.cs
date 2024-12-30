@@ -838,6 +838,227 @@ internal sealed class SolscanClientTests
         });
     }
 
+    [Test]
+    public async Task GetTransactionDetails_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "block_id": 310830160,
+                                            "fee": 5000,
+                                            "reward": [],
+                                            "sol_bal_change": [
+                                              {
+                                                "address": "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h",
+                                                "pre_balance": "65818866229",
+                                                "post_balance": "65818821229",
+                                                "change_amount": "-45000"
+                                              },
+                                              {
+                                                "address": "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+                                                "pre_balance": "103715668",
+                                                "post_balance": "103755668",
+                                                "change_amount": "40000"
+                                              },
+                                              {
+                                                "address": "11111111111111111111111111111111",
+                                                "pre_balance": "1",
+                                                "post_balance": "1",
+                                                "change_amount": "0"
+                                              }
+                                            ],
+                                            "token_bal_change": [],
+                                            "tokens_involved": [],
+                                            "parsed_instructions": [
+                                              {
+                                                "ins_index": 0,
+                                                "parsed_type": "transfer",
+                                                "type": "transfer",
+                                                "program_id": "11111111111111111111111111111111",
+                                                "program": "system",
+                                                "outer_program_id": null,
+                                                "outer_ins_index": -1,
+                                                "data_raw": {
+                                                  "info": {
+                                                    "destination": "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+                                                    "lamports": 40000,
+                                                    "source": "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"
+                                                  },
+                                                  "type": "transfer"
+                                                },
+                                                "accounts": [],
+                                                "activities": [],
+                                                "transfers": [
+                                                  {
+                                                    "source_owner": "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h",
+                                                    "source": "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h",
+                                                    "destination": "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+                                                    "destination_owner": "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+                                                    "transfer_type": "spl_transfer",
+                                                    "token_address": "So11111111111111111111111111111111111111111",
+                                                    "decimals": 9,
+                                                    "amount_str": "40000",
+                                                    "amount": 40000,
+                                                    "program_id": "11111111111111111111111111111111",
+                                                    "outer_program_id": null,
+                                                    "ins_index": 0,
+                                                    "outer_ins_index": -1,
+                                                    "event": "",
+                                                    "fee": {}
+                                                  }
+                                                ],
+                                                "program_invoke_level": 1
+                                              }
+                                            ],
+                                            "programs_involved": [
+                                              "11111111111111111111111111111111"
+                                            ],
+                                            "signer": [
+                                              "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"
+                                            ],
+                                            "list_signer": [
+                                              "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"
+                                            ],
+                                            "status": 1,
+                                            "account_keys": [
+                                              {
+                                                "pubkey": "JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h",
+                                                "signer": true,
+                                                "source": "transaction",
+                                                "writable": true
+                                              },
+                                              {
+                                                "pubkey": "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+                                                "signer": false,
+                                                "source": "transaction",
+                                                "writable": true
+                                              },
+                                              {
+                                                "pubkey": "11111111111111111111111111111111",
+                                                "signer": false,
+                                                "source": "transaction",
+                                                "writable": false
+                                              }
+                                            ],
+                                            "compute_units_consumed": 150,
+                                            "confirmations": null,
+                                            "version": 0,
+                                            "tx_hash": "3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3",
+                                            "block_time": 1735586811,
+                                            "address_table_lookup": [],
+                                            "log_message": [
+                                              "Program 11111111111111111111111111111111 invoke [1]",
+                                              "Program 11111111111111111111111111111111 success"
+                                            ],
+                                            "recent_block_hash": "Bx9oCcBDXb1nZ1RHj6Yjb8oUv7rf95wmJpWWuuFEd6a9",
+                                            "tx_status": "finalized"
+                                          },
+                                          "metadata": {}
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/transaction/detail?tx=3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TransactionDetailsRequest
+        {
+            Tx = "3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3"
+        };
+        var result = await apiClient.GetTransactionDetails(request);
+
+       // Assert
+    Assert.Multiple(() =>
+    {
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Success, Is.True);
+        Assert.That(result.Data, Is.Not.Null);
+        Assert.That(result.Data.BlockId, Is.EqualTo(310830160));
+        Assert.That(result.Data.Fee, Is.EqualTo(5000));
+        Assert.That(result.Data.Reward, Is.Empty);
+        Assert.That(result.Data.SolBalChange, Is.Not.Empty);
+        Assert.That(result.Data.SolBalChange[0].Address,
+            Is.EqualTo("JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"));
+        Assert.That(result.Data.SolBalChange[0].PreBalance, Is.EqualTo("65818866229"));
+        Assert.That(result.Data.SolBalChange[0].PostBalance, Is.EqualTo("65818821229"));
+        Assert.That(result.Data.SolBalChange[0].ChangeAmount, Is.EqualTo("-45000"));
+
+        Assert.That(result.Data.SolBalChange[1].Address,
+            Is.EqualTo("Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY"));
+        Assert.That(result.Data.SolBalChange[1].PreBalance, Is.EqualTo("103715668"));
+        Assert.That(result.Data.SolBalChange[1].PostBalance, Is.EqualTo("103755668"));
+        Assert.That(result.Data.SolBalChange[1].ChangeAmount, Is.EqualTo("40000"));
+
+        Assert.That(result.Data.SolBalChange[2].Address, Is.EqualTo("11111111111111111111111111111111"));
+        Assert.That(result.Data.SolBalChange[2].PreBalance, Is.EqualTo("1"));
+        Assert.That(result.Data.SolBalChange[2].PostBalance, Is.EqualTo("1"));
+        Assert.That(result.Data.SolBalChange[2].ChangeAmount, Is.EqualTo("0"));
+
+        Assert.That(result.Data.TokenBalChange, Is.Empty);
+        Assert.That(result.Data.TokensInvolved, Is.Empty);
+
+        // Verify the single parsed instruction
+        Assert.That(result.Data.ParsedInstructions, Has.Count.EqualTo(1));
+        var instruction = result.Data.ParsedInstructions[0];
+        Assert.That(instruction.InsIndex, Is.EqualTo(0));
+        Assert.That(instruction.ParsedType, Is.EqualTo("transfer"));
+        Assert.That(instruction.Type, Is.EqualTo("transfer"));
+        Assert.That(instruction.ProgramId, Is.EqualTo("11111111111111111111111111111111"));
+        Assert.That(instruction.Program, Is.EqualTo("system"));
+        Assert.That(instruction.OuterProgramId, Is.Null);
+        Assert.That(instruction.OuterInsIndex, Is.EqualTo(-1));
+        Assert.That(instruction.ProgramInvokeLevel, Is.EqualTo(1));
+
+        // Verify the transfers within this instruction
+        Assert.That(instruction.Transfers, Has.Count.EqualTo(1));
+        var transfer = instruction.Transfers[0];
+        Assert.That(transfer.SourceOwner, Is.EqualTo("JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"));
+        Assert.That(transfer.Source, Is.EqualTo("JD1dHSqYkrXvqUVL8s6gzL1yB7kpYymsHfwsGxgwp55h"));
+        Assert.That(transfer.Destination, Is.EqualTo("Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY"));
+        Assert.That(transfer.DestinationOwner, Is.EqualTo("Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY"));
+        Assert.That(transfer.TransferType, Is.EqualTo("spl_transfer"));
+        Assert.That(transfer.TokenAddress, Is.EqualTo("So11111111111111111111111111111111111111111"));
+        Assert.That(transfer.Decimals, Is.EqualTo(9));
+        Assert.That(transfer.AmountStr, Is.EqualTo("40000"));
+        Assert.That(transfer.Amount, Is.EqualTo(40000));
+        Assert.That(transfer.ProgramId, Is.EqualTo("11111111111111111111111111111111"));
+        Assert.That(transfer.OuterProgramId, Is.Null);
+        Assert.That(transfer.InsIndex, Is.EqualTo(0));
+        Assert.That(transfer.OuterInsIndex, Is.EqualTo(-1));
+        Assert.That(transfer.Event, Is.EqualTo(""));
+
+        Assert.That(result.Data.ComputeUnitsConsumed, Is.EqualTo(150));
+        Assert.That(result.Data.Confirmations, Is.Null);
+        Assert.That(result.Data.Version, Is.EqualTo(0));
+        Assert.That(result.Data.TxHash,
+            Is.EqualTo("3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3"));
+        Assert.That(result.Data.BlockTime, Is.EqualTo(1735586811));
+        Assert.That(result.Data.AddressTableLookup, Is.Empty);
+        Assert.That(result.Data.LogMessage, Is.EqualTo(new[]
+        {
+            "Program 11111111111111111111111111111111 invoke [1]",
+            "Program 11111111111111111111111111111111 success"
+        }));
+        Assert.That(result.Data.RecentBlockHash, Is.EqualTo("Bx9oCcBDXb1nZ1RHj6Yjb8oUv7rf95wmJpWWuuFEd6a9"));
+        Assert.That(result.Data.TxStatus, Is.EqualTo("finalized"));
+    });
+    }
+
     #endregion
 
     #region Block APIs
