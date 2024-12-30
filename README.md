@@ -1,5 +1,9 @@
 # SolScanner
 
+
+[![NuGet version (BscScanner)](https://img.shields.io/github/actions/workflow/status/pippinmole/solscanner/test-ci.yml)](https://www.nuget.org/packages/SolScanner)
+[![NuGet downloads (SolScanner)](https://img.shields.io/nuget/dt/SolScanner)](https://www.nuget.org/packages/SolScanner)
+
 SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pro-api-docs/v2.0).
 
 > [!IMPORTANT]  
