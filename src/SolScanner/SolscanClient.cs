@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using SolScanner.Requests;
 using SolScanner.Responses;
@@ -12,8 +15,8 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
 {
     #region Free Tier
 
-    public Task<SolscanResponse<ChainInformation>> GetChainInformation() =>
-        WithRequest<SolscanResponse<ChainInformation>>(new ChainInformationRequest());
+    public Task<SolscanResponse<ChainInformation>> GetChainInformation(CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<ChainInformation>>(new ChainInformationRequest(), token);
 
     #endregion
 
@@ -23,167 +26,233 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     /// Get transfer data of an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<Transfer>>> GetAccountTransfer(AccountTransferRequest r) =>
-        WithRequest<SolscanResponse<List<Transfer>>>(r);
+    public Task<SolscanResponse<List<Transfer>>> GetAccountTransfer(AccountTransferRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<Transfer>>>(r, token);
 
     /// <summary>
     /// Get token accounts of an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<TokenAccountData>>> GetAccountTokenAccounts(AccountTokenAccountsRequest r) => 
-        WithRequest<SolscanResponse<List<TokenAccountData>>>(r);
+    public Task<SolscanResponse<List<TokenAccountData>>> GetAccountTokenAccounts(AccountTokenAccountsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<TokenAccountData>>>(r, token);
 
     /// <summary>
     /// Get defi activities involving an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<DefiActivityData>>> GetAccountDefiActivity(AccountDefiActivityRequest r) => 
-        WithRequest<SolscanResponse<List<DefiActivityData>>>(r);
+    public Task<SolscanResponse<List<DefiActivityData>>> GetAccountDefiActivity(AccountDefiActivityRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<DefiActivityData>>>(r, token);
 
     /// <summary>
     /// Get balance change activities involving an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<BalanceChangeActivity>>> GetAccountBalanceChangeActivities(AccountBalanceChangeActivitiesRequest r) =>
-        WithRequest<SolscanResponse<List<BalanceChangeActivity>>>(r);
-    
+    public Task<SolscanResponse<List<BalanceChangeActivity>>> GetAccountBalanceChangeActivities(
+        AccountBalanceChangeActivitiesRequest r, CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<BalanceChangeActivity>>>(r, token);
+
     /// <summary>
     /// Get balance change activities involving an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<AccountTransaction>>> GetAccountTransactions(AccountTransactionsRequest r) =>
-        WithRequest<SolscanResponse<List<AccountTransaction>>>(r);    
-    
+    public Task<SolscanResponse<List<AccountTransaction>>> GetAccountTransactions(AccountTransactionsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<AccountTransaction>>>(r, token);
+
     /// <summary>
     /// Get the list of stake accounts of an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<AccountStake>>> GetAccountStakes(AccountStakesRequest r) =>
-        WithRequest<SolscanResponse<List<AccountStake>>>(r);
-    
+    public Task<SolscanResponse<List<AccountStake>>> GetAccountStakes(AccountStakesRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<AccountStake>>>(r, token);
+
     /// <summary>
     /// Get the list of stake accounts of an account
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<AccountDetailsResponse>> GetAccountDetails(AccountDetailsRequest r) =>
-        WithRequest<SolscanResponse<AccountDetailsResponse>>(r);
-    
+    public Task<SolscanResponse<AccountDetailsResponse>> GetAccountDetails(AccountDetailsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<AccountDetailsResponse>>(r, token);
+
     // /// <summary>
     // /// Export the rewards for an account. Maximum items: 5000
     // /// </summary>
     // /// <param name="r"></param>
     // /// <returns></returns>
-    // public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r) =>
-    //     WithRequest<SolscanResponse<List<AccountStake>>>(r);
-    
+    // public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r, token) =>
+    //     WithRequest<SolscanResponse<List<AccountStake>>>(r, token);
+
     // /// <summary>
     // /// Export transfer data of an account
     // /// </summary>
     // /// <param name="r"></param>
     // /// <returns></returns>
-    // public Task<SolscanResponse<List<AccountStake>>> GetAccountTransportExport(AccountTransferExportRequest r) =>
-    //     WithRequest<SolscanResponse<List<AccountStake>>>(r);    
+    // public Task<SolscanResponse<List<AccountStake>>> GetAccountTransportExport(AccountTransferExportRequest r, token) =>
+    //     WithRequest<SolscanResponse<List<AccountStake>>>(r, token);    
+
     #endregion
 
     #region Token APIs
-    
+
     #endregion
-    
+
     #region NFT APIs
-    
+
     #endregion
-    
+
     #region Transaction APIs
 
     /// <summary>
     /// Get the list of the latest transactions
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<LastTransaction>>> GetLastTransactions(LastTransactionsRequest r) =>
-        WithRequest<SolscanResponse<List<LastTransaction>>>(r);
-    
+    public Task<SolscanResponse<List<LastTransaction>>> GetLastTransactions(LastTransactionsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<LastTransaction>>>(r, token);
+
     /// <summary>
     /// Get the detail of a transaction. Return transaction data after parsed by Solscan Parser. Data will include very helpful data such as: token and sol balance changes, IDL data, defi or transfer activities of each instructions
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<TransactionDetailsResponse>> GetTransactionDetails(TransactionDetailsRequest r) =>
-        WithRequest<SolscanResponse<TransactionDetailsResponse>>(r);
-    
+    public Task<SolscanResponse<TransactionDetailsResponse>> GetTransactionDetails(TransactionDetailsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<TransactionDetailsResponse>>(r, token);
+
     #endregion
-    
+
     #region Block APIs
 
     /// <summary>
     /// Get the list of the latest blocks
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<Block>>> GetLastBlock(LastBlockRequest r) =>
-        WithRequest<SolscanResponse<List<Block>>>(r);
-    
+    public Task<SolscanResponse<List<Block>>> GetLastBlock(LastBlockRequest r, CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<Block>>>(r, token);
+
     /// <summary>
     /// Get the list of transactions of a block
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<BlockTransactionsResponse>> GetBlockTransactions(BlockTransactionsRequest r) =>
-        WithRequest<SolscanResponse<BlockTransactionsResponse>>(r);
-    
+    public Task<SolscanResponse<BlockTransactionsResponse>> GetBlockTransactions(BlockTransactionsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<BlockTransactionsResponse>>(r, token);
+
     /// <summary>
     /// Get the details of a block
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<BlockDetailsResponse>> GetBlockDetails(BlockDetailsRequest r) =>
-        WithRequest<SolscanResponse<BlockDetailsResponse>>(r);
-    
+    public Task<SolscanResponse<BlockDetailsResponse>> GetBlockDetails(BlockDetailsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<BlockDetailsResponse>>(r, token);
+
     #endregion
-    
+
     #region Monitoring APIs
-    
-    public Task<SolscanResponse<MonitorUsageResponse>> GetMonitorUsage() =>
-        WithRequest<SolscanResponse<MonitorUsageResponse>>(new MonitorUsageRequest());
-    
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<MonitorUsageResponse>> GetMonitorUsage(CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<MonitorUsageResponse>>(new MonitorUsageRequest(), token);
+
     #endregion
-    
+
     #region Market APIs
-    
+
     /// <summary>
     /// Get the list of pool markets
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<List<PoolMarket>>> GetPoolMarketList(PoolMarketListRequest r) =>
-        WithRequest<SolscanResponse<List<PoolMarket>>>(r);
-    
+    public Task<SolscanResponse<List<PoolMarket>>> GetPoolMarketList(PoolMarketListRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<List<PoolMarket>>>(r, token);
+
     /// <summary>
     /// Get token market info
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<MarketInfoResponse>> GetMarketInfo(MarketInfoRequest r) =>
-        WithRequest<SolscanResponse<MarketInfoResponse>>(r);
-    
+    public Task<SolscanResponse<MarketInfoResponse>> GetMarketInfo(MarketInfoRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<MarketInfoResponse>>(r, token);
+
     /// <summary>
     /// Get the list of pool markets
     /// </summary>
     /// <param name="r"></param>
+    /// <param name="token"></param>
     /// <returns></returns>
-    public Task<SolscanResponse<MarketVolumeResponse>> GetMarketVolume(MarketVolumeRequest r) =>
-        WithRequest<SolscanResponse<MarketVolumeResponse>>(r);
-    
+    public Task<SolscanResponse<MarketVolumeResponse>> GetMarketVolume(MarketVolumeRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<MarketVolumeResponse>>(r, token);
+
     #endregion
-    
-    private async Task<T> WithRequest<T>(BaseRequest req)
+
+    /// <summary>
+    /// Sends an HTTP GET request using the provided <see cref="BaseRequest"/> 
+    /// and returns a deserialized response of type <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// This method attempts to deserialize the response content as JSON even for 
+    /// HTTP status codes 400 (Bad Request). For any other non-success status code, an 
+    /// exception is thrown.
+    /// </remarks>
+    /// <typeparam name="T">The type into which the JSON response is deserialized.</typeparam>
+    /// <param name="req">The <see cref="BaseRequest"/> object containing request parameters and URL.</param>
+    /// <param name="ctx"></param>
+    /// <returns>
+    /// A task representing the asynchronous operation, containing the deserialized 
+    /// object of type <typeparamref name="T"/>.
+    /// </returns>
+    /// <exception cref="HttpRequestException">
+    /// Thrown if the response has a non-success status code that is not one of 
+    /// 400, 401, 429, or 500 (i.e., <see cref="HttpResponseMessage.EnsureSuccessStatusCode"/> 
+    /// is called for unrecognized errors).
+    /// </exception>
+    /// <exception cref="JsonException">
+    /// Thrown if the content of the response cannot be deserialized into 
+    /// <typeparamref name="T"/>.
+    /// </exception>
+    /// <exception cref="TaskCanceledException">
+    /// Thrown if the request times out before it can complete.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">
+    /// Thrown if the request is canceled.
+    /// </exception>
+    private async Task<T> WithRequestAsync<T>(BaseRequest req, CancellationToken ctx)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, req.GetUrl());
 
@@ -192,8 +261,13 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
         request.Content = content;
 
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        var response = await client.SendAsync(request, ctx);
+
+        // Check status code. If it’s not success and not one of the "parse-anyway" codes, throw.
+        if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.BadRequest)
+        {
+            response.EnsureSuccessStatusCode();
+        }
 
         var json = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<T>(json);
