@@ -6,7 +6,7 @@
 
         <Authors>pippin_mole</Authors>
         <Description>A .NET library which wraps the Solscan API</Description>
-        <PackageProjectUrl>https://github.com/pippinmole/SolScannerr</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/pippinmole/SolScanner</PackageProjectUrl>
         <RepositoryUrl>https://github.com/pippinmole/SolScanner</RepositoryUrl>
         <PackageTags>solscan,crypto,api,wrapper,.net</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
