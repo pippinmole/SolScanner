@@ -267,6 +267,76 @@ internal sealed class SolscanClientTests
     }
 
     [Test]
+    public async Task GetTokenMarkets_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "pool_id": "GBmzQL7BTKwSV9Qg7h5iXQad1q61xwMSzMpdbBkCyo2p",
+                                              "program_id": "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p",
+                                              "token_1": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                                              "token_2": "So11111111111111111111111111111111111111112",
+                                              "token_account_1": "DBW3ZfheSXEWzqcoUCy11dX4uazNbGTar7LmBMXReJpZ",
+                                              "token_account_2": "An9rnaGYDHJVzvmxGEwrTTjCPszWRzkvF8dEypmhhajU",
+                                              "total_trades_24h": 702,
+                                              "total_trades_prev_24h": 769,
+                                              "total_volume_24h": 52681.42357718662,
+                                              "total_volume_prev_24h": 84649.30925076797
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/markets?token=4gh6K59P7N5m63ynx5YEgV7Vd77PzmBPGRYAPGJn2SYv&page=1337&page_size=20&sort_by=block_time")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TokenMarketsRequest
+        {
+            Token = "4gh6K59P7N5m63ynx5YEgV7Vd77PzmBPGRYAPGJn2SYv",
+            Page = 1337,
+            PageSize = 20,
+            SortBy = "block_time",
+        };
+        var result = await apiClient.GetTokenMarkets(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].PoolId, Is.EqualTo("GBmzQL7BTKwSV9Qg7h5iXQad1q61xwMSzMpdbBkCyo2p"));
+            Assert.That(result.Data[0].ProgramId, Is.EqualTo("BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p"));
+            Assert.That(result.Data[0].Token1, Is.EqualTo("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"));
+            Assert.That(result.Data[0].Token2, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data[0].TokenAccount1, Is.EqualTo("DBW3ZfheSXEWzqcoUCy11dX4uazNbGTar7LmBMXReJpZ"));
+            Assert.That(result.Data[0].TokenAccount2, Is.EqualTo("An9rnaGYDHJVzvmxGEwrTTjCPszWRzkvF8dEypmhhajU"));
+            Assert.That(result.Data[0].TotalTrades24h, Is.EqualTo(702));
+            Assert.That(result.Data[0].TotalTradesPrev24h, Is.EqualTo(769));
+            Assert.That(result.Data[0].TotalVolume24h, Is.EqualTo(52681.42357718662));
+            Assert.That(result.Data[0].TotalVolumePrev24h, Is.EqualTo(84649.30925076797));
+        });
+    }
+
+    [Test]
     public async Task GetAccountBalanceChangeActivities_WithValidRequest_ReturnsAccountTransfer()
     {
         // Arrange

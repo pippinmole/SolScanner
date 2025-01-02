@@ -130,6 +130,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     /// <returns></returns>
     public Task<SolscanResponse<List<TokenDefiActivityData>>> GetTokenDefiActivities(TokenDefiActivitiesRequest r, CancellationToken ctx) =>
     WithRequestAsync<SolscanResponse<List<TokenDefiActivityData>>>(r, ctx);
+    
+    /// <summary>
+    /// Get defi activities involving a token
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<TokenMarket>>> GetTokenMarkets(TokenMarketsRequest r, CancellationToken ctx) =>
+    WithRequestAsync<SolscanResponse<List<TokenMarket>>>(r, ctx);
 
     /// <summary>
     /// Get the list of tokens
