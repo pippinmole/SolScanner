@@ -852,6 +852,72 @@ internal sealed class SolscanClientTests
         });
     }
     
+    [Test]
+    public async Task GetTrendingTokens_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "address": "CL4KcMhPpEeNmR7rK7RHsLSTqshoYpasSxHHhduamfe6",
+                                              "decimals": 9,
+                                              "name": "Owners Casino Online",
+                                              "symbol": "OCO"
+                                            },
+                                            {
+                                              "address": "Gouk6Q1JyrHJXymfb7KFJkBtZGDdxmGctu9T14zRpNWu",
+                                              "decimals": 9,
+                                              "name": "DopaMeme",
+                                              "symbol": "DOPA"
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/trending?limit=10")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TrendingTokenRequest
+        {
+            Limit = 10
+        };
+        var result = await apiClient.GetTrendingTokens(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Address, Is.EqualTo("CL4KcMhPpEeNmR7rK7RHsLSTqshoYpasSxHHhduamfe6"));
+            Assert.That(result.Data[0].Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[0].Name, Is.EqualTo("Owners Casino Online"));
+            Assert.That(result.Data[0].Symbol, Is.EqualTo("OCO"));
+            
+            Assert.That(result.Data[1].Address, Is.EqualTo("Gouk6Q1JyrHJXymfb7KFJkBtZGDdxmGctu9T14zRpNWu"));
+            Assert.That(result.Data[1].Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[1].Name, Is.EqualTo("DopaMeme"));
+            Assert.That(result.Data[1].Symbol, Is.EqualTo("DOPA"));
+        });
+    }
+    
     #endregion
 
     #region NFT APIs

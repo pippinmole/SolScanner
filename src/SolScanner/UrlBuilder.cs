@@ -28,7 +28,7 @@ public sealed class UrlBuilder
     private string[] _platforms = [];
     private string[] _sourceAddresses = [];
     private string _before;
-    private string _limit;
+    private uint _limit;
     private bool? _removeSpam;
     private uint _timeFrom;
     private uint _timeTo;
@@ -208,20 +208,26 @@ public sealed class UrlBuilder
         return this;
     }
 
+    public UrlBuilder WithLimit(uint limit)
+    {
+        _limit = limit;
+        return this;
+    }
+    
     public UrlBuilder WithLimit(ELimit limit)
     {
         _limit = limit switch
         {
-            ELimit.Ten => "10",
-            ELimit.Twenty => "20",
-            ELimit.Thirty => "30",
-            ELimit.Fourty => "40",
-            ELimit.Fifty => "50",
-            ELimit.Sixty => "60",
-            ELimit.Seventy => "70",
-            ELimit.Eighty => "80",
-            ELimit.Ninety => "90",
-            ELimit.OneHundred => "100",
+            ELimit.Ten => 10,
+            ELimit.Twenty => 20,
+            ELimit.Thirty => 30,
+            ELimit.Fourty => 40,
+            ELimit.Fifty => 50,
+            ELimit.Sixty => 60,
+            ELimit.Seventy => 70,
+            ELimit.Eighty => 80,
+            ELimit.Ninety => 90,
+            ELimit.OneHundred => 100,
             _ => throw new ArgumentOutOfRangeException(nameof(limit), limit, null)
         };
 
@@ -306,7 +312,7 @@ public sealed class UrlBuilder
         if (!string.IsNullOrEmpty(_before))
             query.Add($"before={_before}");
 
-        if (!string.IsNullOrEmpty(_limit))
+        if (_limit > 0)
             query.Add($"limit={_limit}");
 
         if (!string.IsNullOrEmpty(_tx))
