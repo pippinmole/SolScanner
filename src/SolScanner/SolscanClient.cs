@@ -177,6 +177,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
         WithRequestAsync<SolscanResponse<TokenHoldersResponse>>(r, ctx);
     
     /// <summary>
+    /// Get the list of token holders
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<TokenMetaResponse>> GetTokenMeta(TokenMetaRequest r, CancellationToken ctx) =>
+        WithRequestAsync<SolscanResponse<TokenMetaResponse>>(r, ctx);
+    
+    /// <summary>
     /// Get the list of trending tokens
     /// </summary>
     /// <param name="r"></param>

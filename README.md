@@ -47,8 +47,8 @@ SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pr
 | Account transactions              | Account APIs     | `GetAccountTransactions`            | ✅              |
 | Account stake                     | Account APIs     | `GetAccountStakes`                  | ✅              |
 | Account detail                    | Account APIs     | `GetAccountDetails`                 | ✅              |
-| Account rewards export            | Account APIs     | `GetAccountRewardsExport`           | ✅              |
-| Account transfer export           | Account APIs     | `GetAccountTransportExport`         | ✅              |
+| Account rewards export            | Account APIs     | `GetAccountRewardsExport`           | ❌              |
+| Account transfer export           | Account APIs     | `GetAccountTransportExport`         | ❌              |
 | Token transfer                    | Token APIs       | `GetTokenTransfers`                 | ✅              |
 | Token defi activities             | Token APIs       | `GetTokenDefiActivities`            | ✅              |
 | Token markets                     | Token APIs       | `GetTokenMarkets`                   | ✅              |
@@ -56,7 +56,7 @@ SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pr
 | Token trending                    | Token APIs       | `GetTrendingTokens`                 | ✅              |
 | Token price                       | Token APIs       | `GetTokenPrice`                     | ✅              |
 | Token holders                     | Token APIs       | `GetTokenHolders`                   | ✅              |
-| Token meta                        | Token APIs       | ``                                  | ❌              |
+| Token meta                        | Token APIs       | `GetTokenMeta`                      | ✅              |
 | Token top                         | Token APIs       | `GetTopToken`                       | ✅              |
 | News NFT                          | NFT APIs         | ``                                  | ❌              |
 | NFT activities                    | NFT APIs         | ``                                  | ❌              |

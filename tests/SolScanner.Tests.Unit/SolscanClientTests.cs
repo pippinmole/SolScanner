@@ -1162,6 +1162,7 @@ internal sealed class SolscanClientTests
             Assert.That(result.Data[2].Price, Is.EqualTo(0.953814));
         });
     }
+    
     [Test]
     public async Task GetTokenHolders_WithValidRequest_ReturnsAccountTransfer()
     {
@@ -1224,6 +1225,84 @@ internal sealed class SolscanClientTests
             Assert.That(result.Data.Items[0].Decimals, Is.EqualTo(6));
             Assert.That(result.Data.Items[0].Owner, Is.EqualTo("61aq585V8cR2sZBeawJFt2NPqmN7zDi1sws4KLs5xHXV"));
             Assert.That(result.Data.Items[0].Rank, Is.EqualTo(1));
+        });
+    }
+    
+    [Test]
+    public async Task GetTokenMeta_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "supply": "999854872033381",
+                                            "address": "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
+                                            "name": "Peanut the Squirrel ",
+                                            "symbol": "Pnut ",
+                                            "icon": "https://ipfs.io/ipfs/QmNdTtJauw39u4DzGyTaZ35rRx4VgAxqb91wE89zjyHWd2",
+                                            "decimals": 6,
+                                            "holder": 67277,
+                                            "creator": "HrHJputHcA8mkwrcQB3GkrJ2u1f7Fm4LzAZptSYSsUcf",
+                                            "create_tx": "2Av1bHTDCSc9hU5nNHfFmn2xUuJftEV4HcwSszU6v5Axrf46vaGWbLjmTYysHkcv9ajsUpzWjF61VZaQE1EUWWme",
+                                            "created_time": 1730384500,
+                                            "first_mint_tx": "2Av1bHTDCSc9hU5nNHfFmn2xUuJftEV4HcwSszU6v5Axrf46vaGWbLjmTYysHkcv9ajsUpzWjF61VZaQE1EUWWme",
+                                            "first_mint_time": 1730384500,
+                                            "price": 1.31,
+                                            "volume_24h": 2186564687,
+                                            "market_cap": 1311684188,
+                                            "market_cap_rank": 96,
+                                            "price_change_24h": 13.62941
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/meta?address=ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TokenMetaRequest
+        {
+            Address = "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49"
+        };
+        var result = await apiClient.GetTokenMeta(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data.Supply, Is.EqualTo("999854872033381"));
+            Assert.That(result.Data.Address, Is.EqualTo("2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump"));
+            Assert.That(result.Data.Name, Is.EqualTo("Peanut the Squirrel "));
+            Assert.That(result.Data.Symbol, Is.EqualTo("Pnut "));
+            Assert.That(result.Data.Icon, Is.EqualTo("https://ipfs.io/ipfs/QmNdTtJauw39u4DzGyTaZ35rRx4VgAxqb91wE89zjyHWd2"));
+            Assert.That(result.Data.Decimals, Is.EqualTo(6));
+            Assert.That(result.Data.Holder, Is.EqualTo(67277));
+            Assert.That(result.Data.Creator, Is.EqualTo("HrHJputHcA8mkwrcQB3GkrJ2u1f7Fm4LzAZptSYSsUcf"));
+            Assert.That(result.Data.CreateTx, Is.EqualTo("2Av1bHTDCSc9hU5nNHfFmn2xUuJftEV4HcwSszU6v5Axrf46vaGWbLjmTYysHkcv9ajsUpzWjF61VZaQE1EUWWme"));
+            Assert.That(result.Data.CreatedTime, Is.EqualTo(1730384500));
+            Assert.That(result.Data.FirstMintTx, Is.EqualTo("2Av1bHTDCSc9hU5nNHfFmn2xUuJftEV4HcwSszU6v5Axrf46vaGWbLjmTYysHkcv9ajsUpzWjF61VZaQE1EUWWme"));
+            Assert.That(result.Data.FirstMintTime, Is.EqualTo(1730384500));
+            Assert.That(result.Data.Price, Is.EqualTo(1.31));
+            Assert.That(result.Data.Volume24h, Is.EqualTo(2186564687));
+            Assert.That(result.Data.MarketCap, Is.EqualTo(1311684188));
+            Assert.That(result.Data.MarketCapRank, Is.EqualTo(96));
+            Assert.That(result.Data.PriceChange24h, Is.EqualTo(13.62941));
         });
     }
     
