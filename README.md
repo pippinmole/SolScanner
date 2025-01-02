@@ -58,7 +58,7 @@ SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pr
 | Token holders                     | Token APIs       | `GetTokenHolders`                   | ✅              |
 | Token meta                        | Token APIs       | `GetTokenMeta`                      | ✅              |
 | Token top                         | Token APIs       | `GetTopToken`                       | ✅              |
-| News NFT                          | NFT APIs         | ``                                  | ❌              |
+| News NFT                          | NFT APIs         | `GetNftNews`                        | ✅              |
 | NFT activities                    | NFT APIs         | ``                                  | ❌              |
 | NFT collection lists              | NFT APIs         | ``                                  | ❌              |
 | NFT collection items              | NFT APIs         | ``                                  | ❌              |

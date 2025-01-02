@@ -1367,6 +1367,192 @@ internal sealed class SolscanClientTests
 
     #region NFT APIs
 
+    [Test]
+    public async Task GetNftNews_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "info": {
+                                                "address": "778ijZKhjvD4ePsBMRsnhk4qSJqikjwS6sBgAeij348Y",
+                                                "collection": "Time Travelling Benji",
+                                                "collectionId": "13d27abddf2b05c498551454c7bde30067a5ec38243ea99ea79607c73abb5e41",
+                                                "collectionKey": "67e49cZfNVbBncyAjR4AKCfVSFF36ApKTC1kcJhPoZjx",
+                                                "createdTime": 1720414991,
+                                                "data": {
+                                                  "name": "Time Travelling Benji #51",
+                                                  "symbol": "TTB",
+                                                  "uri": "https://gateway.pinit.io/ipfs/QmTkNJ6ham4BL1Hi6L8hpkjQJsH19qapprvr8CGQDsuDKs/51.json",
+                                                  "sellerFeeBasisPoints": 690,
+                                                  "creators": [
+                                                    {
+                                                      "address": "4hmD2FWxwVfmizaJjbx32UV6hmTfWwUgTUjXbJ9KNsKy",
+                                                      "verified": 1,
+                                                      "share": 0
+                                                    },
+                                                    {
+                                                      "address": "4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF",
+                                                      "verified": 0,
+                                                      "share": 100
+                                                    }
+                                                  ],
+                                                  "id": 51
+                                                },
+                                                "meta": {
+                                                  "image": "https://na-assets.pinit.io/4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF/af6a50f5-214b-4078-931a-198631f92db6/51",
+                                                  "tokenId": 51,
+                                                  "name": "Time Travelling Benji #51",
+                                                  "symbol": "TTB",
+                                                  "description": "1137 Benjis are noble travelers of both time and space on a quest to seek the « Everything Answer », the ultimate truth that underpinned the cosmos.",
+                                                  "seller_fee_basis_points": 1000,
+                                                  "edition": 0,
+                                                  "attributes": [
+                                                    {
+                                                      "trait_type": "benji",
+                                                      "value": "Benji"
+                                                    },
+                                                    {
+                                                      "trait_type": "biome",
+                                                      "value": "Ice Era"
+                                                    },
+                                                    {
+                                                      "trait_type": "eyes",
+                                                      "value": "Sun Glasses"
+                                                    },
+                                                    {
+                                                      "trait_type": "head",
+                                                      "value": "Top Hat"
+                                                    },
+                                                    {
+                                                      "trait_type": "magic tools",
+                                                      "value": "Rosa"
+                                                    },
+                                                    {
+                                                      "trait_type": "mood",
+                                                      "value": "ᛝ"
+                                                    },
+                                                    {
+                                                      "trait_type": "mouth",
+                                                      "value": "ᛝ"
+                                                    },
+                                                    {
+                                                      "trait_type": "wings",
+                                                      "value": "ᛝ"
+                                                    }
+                                                  ],
+                                                  "properties": {
+                                                    "files": [
+                                                      {
+                                                        "uri": "https://na-assets.pinit.io/4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF/af6a50f5-214b-4078-931a-198631f92db6/51",
+                                                        "type": "image/gif"
+                                                      }
+                                                    ],
+                                                    "category": "image"
+                                                  },
+                                                  "retried": 0
+                                                },
+                                                "mintTx": "5GPCPy3Fk6ZGqBPPhjdRRacXrktdrDJkU3edvANjc8MmdBTwXGVRpTeGvh1NkHE5FF2NGxbT95D3Bk3NaRoGL8Dm"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/nft/news?page=10&page_size=10&filter=created_time")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new NftNewsRequest
+        {
+            Filter = ENftFilter.CreatedTime,
+            PageSize = 10,
+            Page = 10
+        };
+        var result = await apiClient.GetNftNews(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Has.Count.EqualTo(1));
+
+            var nftInfo = result.Data[0].Info;
+            Assert.That(nftInfo, Is.Not.Null);
+            Assert.That(nftInfo.Address, Is.EqualTo("778ijZKhjvD4ePsBMRsnhk4qSJqikjwS6sBgAeij348Y"));
+            Assert.That(nftInfo.Collection, Is.EqualTo("Time Travelling Benji"));
+            Assert.That(nftInfo.CollectionId,
+                Is.EqualTo("13d27abddf2b05c498551454c7bde30067a5ec38243ea99ea79607c73abb5e41"));
+            Assert.That(nftInfo.CollectionKey,
+                Is.EqualTo("67e49cZfNVbBncyAjR4AKCfVSFF36ApKTC1kcJhPoZjx"));
+            Assert.That(nftInfo.CreatedTime, Is.EqualTo(1720414991));
+
+            var nftData = nftInfo.Data;
+            Assert.That(nftData, Is.Not.Null);
+            Assert.That(nftData.Name, Is.EqualTo("Time Travelling Benji #51"));
+            Assert.That(nftData.Symbol, Is.EqualTo("TTB"));
+            Assert.That(nftData.Uri,
+                Is.EqualTo("https://gateway.pinit.io/ipfs/QmTkNJ6ham4BL1Hi6L8hpkjQJsH19qapprvr8CGQDsuDKs/51.json"));
+            Assert.That(nftData.SellerFeeBasisPoints, Is.EqualTo(690));
+            Assert.That(nftData.Creators, Has.Count.EqualTo(2));
+            Assert.That(nftData.Creators[0].Address,
+                Is.EqualTo("4hmD2FWxwVfmizaJjbx32UV6hmTfWwUgTUjXbJ9KNsKy"));
+            Assert.That(nftData.Creators[0].Verified, Is.EqualTo(1));
+            Assert.That(nftData.Creators[0].Share, Is.EqualTo(0));
+            Assert.That(nftData.Creators[1].Address,
+                Is.EqualTo("4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF"));
+            Assert.That(nftData.Creators[1].Verified, Is.EqualTo(0));
+            Assert.That(nftData.Creators[1].Share, Is.EqualTo(100));
+
+            var nftMeta = nftInfo.Meta;
+            Assert.That(nftMeta, Is.Not.Null);
+            Assert.That(nftMeta.Image,
+                Is.EqualTo(
+                    "https://na-assets.pinit.io/4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF/af6a50f5-214b-4078-931a-198631f92db6/51"));
+            Assert.That(nftMeta.TokenId, Is.EqualTo(51));
+            Assert.That(nftMeta.Name, Is.EqualTo("Time Travelling Benji #51"));
+            Assert.That(nftMeta.Symbol, Is.EqualTo("TTB"));
+            Assert.That(nftMeta.Description,
+                Is.EqualTo(
+                    "1137 Benjis are noble travelers of both time and space on a quest to seek the « Everything Answer », the ultimate truth that underpinned the cosmos."));
+            Assert.That(nftMeta.SellerFeeBasisPoints, Is.EqualTo(1000));
+            Assert.That(nftMeta.Edition, Is.EqualTo(0));
+            Assert.That(nftMeta.Attributes, Has.Count.GreaterThan(0));
+            Assert.That(nftMeta.Attributes[0].TraitType, Is.EqualTo("benji"));
+            Assert.That(nftMeta.Attributes[0].Value, Is.EqualTo("Benji"));
+
+            var nftProperties = nftMeta.Properties;
+            Assert.That(nftProperties, Is.Not.Null);
+            Assert.That(nftProperties.Files, Has.Count.EqualTo(1));
+            Assert.That(nftProperties.Files[0].Uri,
+                Is.EqualTo(
+                    "https://na-assets.pinit.io/4xxPpyKJAFaJHAYvYavUsrF59rPMCc2kUp7r5zVifzYF/af6a50f5-214b-4078-931a-198631f92db6/51"));
+            Assert.That(nftProperties.Files[0].Type, Is.EqualTo("image/gif"));
+            Assert.That(nftProperties.Category, Is.EqualTo("image"));
+
+            Assert.That(nftMeta.Retried, Is.EqualTo(0));
+
+            Assert.That(nftInfo.MintTx,
+                Is.EqualTo("5GPCPy3Fk6ZGqBPPhjdRRacXrktdrDJkU3edvANjc8MmdBTwXGVRpTeGvh1NkHE5FF2NGxbT95D3Bk3NaRoGL8Dm"));
+        });
+    }
+
     #endregion
 
     #region Transaction APIs

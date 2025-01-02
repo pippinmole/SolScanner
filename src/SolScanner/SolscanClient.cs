@@ -198,6 +198,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
 
     #region NFT APIs
 
+    /// <summary>
+    /// Get the list of new NFTs
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<NftNews>>> GetNftNews(NftNewsRequest r, CancellationToken ctx = default) =>
+        WithRequestAsync<SolscanResponse<List<NftNews>>>(r, ctx);
+    
     #endregion
 
     #region Transaction APIs

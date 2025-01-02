@@ -410,4 +410,14 @@ public sealed class UrlBuilder
         _toAmount = toAmount;
         return this;
     }
+
+    public UrlBuilder WithFilter(ENftFilter filter)
+    {
+        _filter = filter switch
+        {
+            ENftFilter.CreatedTime => "created_time",
+            _ => throw new ArgumentOutOfRangeException(nameof(filter), filter, null)
+        };
+        return this;
+    }
 }
