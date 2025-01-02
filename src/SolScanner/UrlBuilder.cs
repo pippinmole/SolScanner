@@ -132,6 +132,19 @@ public sealed class UrlBuilder
         _sortBy = sortBy;
         return this;
     }
+    
+    public UrlBuilder WithSortBy(ESortByToken sortBy)
+    {
+        _sortBy = sortBy switch
+        {
+            ESortByToken.CreatedTime => "created_time",
+            ESortByToken.Holder => "holder",
+            ESortByToken.MarketCap => "market_cap",
+            ESortByToken.Price => "price",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null)
+        };
+        return this;
+    }
 
     public UrlBuilder WithSortOrder(ESortOrder sortOrder)
     {
@@ -369,4 +382,6 @@ public sealed class UrlBuilder
 
         return $"{_baseUrl}?{string.Join("&", query)}";
     }
+
+
 }

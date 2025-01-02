@@ -783,6 +783,73 @@ internal sealed class SolscanClientTests
             Assert.That(result.Data[0].Amount, Is.EqualTo(500000000));
             Assert.That(result.Data[0].Flow, Is.EqualTo(EFlow.In));
         });
+    } 
+    
+    [Test]
+    public async Task GetTokenList_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "address": "So11111111111111111111111111111111111111112",
+                                              "decimals": 9,
+                                              "name": "Wrapped SOL",
+                                              "symbol": "SOL",
+                                              "market_cap": 120740500232,
+                                              "price": 254.31,
+                                              "price_24h_change": -0.49324,
+                                              "created_time": 1713016188
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/list?page=1337&page_size=20&sort_by=holder&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new GetTokenListRequest
+        {
+            Page = 1337,
+            PageSize = 20,
+            SortBy = ESortByToken.Holder,
+            SortOrder = ESortOrder.Descending
+        };
+        var result = await apiClient.GetTokenList(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Address, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data[0].Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[0].Name, Is.EqualTo("Wrapped SOL"));
+            Assert.That(result.Data[0].Symbol, Is.EqualTo("SOL"));
+            Assert.That(result.Data[0].Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[0].MarketCap, Is.EqualTo(120740500232));
+            Assert.That(result.Data[0].Price, Is.EqualTo(254.31));
+            Assert.That(result.Data[0].Price24hChange, Is.EqualTo(-0.49324d));
+            Assert.That(result.Data[0].CreatedTime, Is.EqualTo(1713016188));
+        });
     }
     
     #endregion
