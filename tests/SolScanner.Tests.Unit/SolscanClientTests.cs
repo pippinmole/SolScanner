@@ -786,6 +786,113 @@ internal sealed class SolscanClientTests
     } 
     
     [Test]
+    public async Task GetTokenDefiActivities_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "block_id": 276316793,
+                                              "trans_id": "5nNnNLQemrvYCZZJaxHAZnBLvFNaxRM46tAsyx2h1XoC8Xfi5Df773hyEgQtgb4yQJA11zkAGwVgsXTmDnjmnXea",
+                                              "block_time": 1720410820,
+                                              "activity_type": "ACTIVITY_AGG_TOKEN_SWAP",
+                                              "from_address": "DCAKuApAuZtVNYLk3KTAVW9GLWVvPbnb5CxxRRmVgcTr",
+                                              "to_address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                                              "sources": [
+                                                "2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c"
+                                              ],
+                                              "platform": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+                                              "routers": {
+                                                "token1": "So11111111111111111111111111111111111111112",
+                                                "token1_decimals": 9,
+                                                "amount1": 1392500000,
+                                                "token2": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                                                "token2_decimals": 5,
+                                                "amount2": 885074062301,
+                                                "child_routers": [
+                                                  {
+                                                    "token1": "So11111111111111111111111111111111111111112",
+                                                    "token1_decimals": 9,
+                                                    "amount1": "1392500000",
+                                                    "token2": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                                                    "token2_decimals": 5,
+                                                    "amount2": "885074062301"
+                                                  }
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/defi/activities?address=SCre8QfQdNWNLqiFd99TBUhWAov15CuLUQ3Grf8gT8X&from=Aa4qpi5N2zqT2bKeqRGXdsmy237a4vWwarTsWZPbChAm&page=1337&page_size=20&sort_by=block_time&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TokenDefiActivitiesRequest
+        {
+            Address = "SCre8QfQdNWNLqiFd99TBUhWAov15CuLUQ3Grf8gT8X",
+            From = "Aa4qpi5N2zqT2bKeqRGXdsmy237a4vWwarTsWZPbChAm",
+            Platforms = [],
+            Sources = [],
+            ActivityTypes = [],
+            BlockTimes = [],
+            Page = 1337,
+            PageSize = 20,
+            SortBy = ESortByBlock.BlockTime,
+            SortOrder = ESortOrder.Descending
+        };
+        var result = await apiClient.GetTokenDefiActivities(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].BlockId, Is.EqualTo(276316793));
+            Assert.That(result.Data[0].TransactionId,
+                Is.EqualTo("5nNnNLQemrvYCZZJaxHAZnBLvFNaxRM46tAsyx2h1XoC8Xfi5Df773hyEgQtgb4yQJA11zkAGwVgsXTmDnjmnXea"));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1720410820));
+            Assert.That(result.Data[0].ActivityType, Is.EqualTo(EDefiActivityType.ACTIVITY_AGG_TOKEN_SWAP));
+            Assert.That(result.Data[0].FromAddress, Is.EqualTo("DCAKuApAuZtVNYLk3KTAVW9GLWVvPbnb5CxxRRmVgcTr"));
+            Assert.That(result.Data[0].ToAddress, Is.EqualTo("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"));
+            Assert.That(result.Data[0].Sources, Is.EqualTo(["2wT8Yq49kHgDzXuPxZSaeLaH1qbmGXtEyPy64bL7aD3c"]));
+            Assert.That(result.Data[0].Platform, Is.EqualTo("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"));
+            Assert.That(result.Data[0].Routers.Token1, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data[0].Routers.Token1Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[0].Routers.Amount1, Is.EqualTo(1392500000));
+            Assert.That(result.Data[0].Routers.Token2, Is.EqualTo("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"));
+            Assert.That(result.Data[0].Routers.Token2Decimals, Is.EqualTo(5));
+            Assert.That(result.Data[0].Routers.Amount2, Is.EqualTo(885074062301));
+            Assert.That(result.Data[0].Routers.ChildRouters, Is.Not.Null);
+            Assert.That(result.Data[0].Routers.ChildRouters, Is.Not.Empty);
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Token1, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Token1Decimals, Is.EqualTo(9));
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Amount1, Is.EqualTo("1392500000"));
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Token2, Is.EqualTo("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"));
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Token2Decimals, Is.EqualTo(5));
+            Assert.That(result.Data[0].Routers.ChildRouters[0].Amount2, Is.EqualTo("885074062301"));
+        });
+    } 
+    
+    [Test]
     public async Task GetTokenList_WithValidRequest_ReturnsAccountTransfer()
     {
         // Arrange

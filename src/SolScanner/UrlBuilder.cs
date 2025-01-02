@@ -94,7 +94,8 @@ public sealed class UrlBuilder
 
     public UrlBuilder WithBlockTimes(params uint[] blockTimes)
     {
-        _blockTimes.AddRange(blockTimes);
+        if (blockTimes.Length > 0)
+            _blockTimes.AddRange(blockTimes);
         return this;
     }
 

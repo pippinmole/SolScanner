@@ -123,6 +123,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
         WithRequestAsync<SolscanResponse<List<TokenTransfer>>>(r, ctx);
 
     /// <summary>
+    /// Get defi activities involving a token
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<TokenDefiActivityData>>> GetTokenDefiActivities(TokenDefiActivitiesRequest r, CancellationToken ctx) =>
+    WithRequestAsync<SolscanResponse<List<TokenDefiActivityData>>>(r, ctx);
+
+    /// <summary>
     /// Get the list of tokens
     /// </summary>
     /// <param name="r"></param>
