@@ -42,6 +42,7 @@ public sealed class UrlBuilder
     private string _collection;
     private string _currencyToken;
     private uint[] _prices = [];
+    private uint _range;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -350,6 +351,9 @@ public sealed class UrlBuilder
 
         foreach (var price in _prices)
             query.Add($"price[]={price}");
+        
+        if(_range > 0)
+            query.Add($"range={_range}");
 
         foreach (var time in _times)
             query.Add($"time[]={time}");
@@ -454,6 +458,24 @@ public sealed class UrlBuilder
     public UrlBuilder WithActivityTypes(params ENftActivityType[] activityTypes)
     {
         _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
+        return this;
+    }
+
+    public UrlBuilder WithRange(uint range)
+    {
+        _range = range;
+        return this;
+    }
+
+    public UrlBuilder WithSortBy(ENftSortBy sortBy)
+    {
+        _sortBy = sortBy switch
+        {
+            ENftSortBy.Items => "items",
+            ENftSortBy.FloorPrice => "floor_price",
+            ENftSortBy.Volumes => "volumes",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null)
+        };
         return this;
     }
 }

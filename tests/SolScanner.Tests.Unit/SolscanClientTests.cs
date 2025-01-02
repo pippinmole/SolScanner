@@ -1640,6 +1640,90 @@ internal sealed class SolscanClientTests
         });
     }
 
+    [Test]
+    public async Task GetNftCollections_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "collection_id": "fc8dd31116b25e6690d83f6fb102e67ac6a9364dc2b96285d636aed462c4a983",
+                                              "name": "SMB Gen2",
+                                              "symbol": "SMB",
+                                              "floor_price": 32.359,
+                                              "items": 5069,
+                                              "marketplaces": [
+                                                "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
+                                                "CJsLwbP1iu5DuUikHEJnLfANgKy6stB2uFgvBBHoyxwz",
+                                                "mmm3XBJg5gk8XJxEKBvdgptZz6SgK4tXvn36sodowMc",
+                                                "TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN",
+                                                "hadeK9DLv9eA7ya5KCTqSvSvRZeJC3JgD5a9Y3CNbvu"
+                                              ],
+                                              "volumes": 4106.231117706,
+                                              "total_vol_prev_24h": 1295.469643436
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/nft/collection/lists?page=10&page_size=10&sort_by=items&sort_order=asc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new NftCollectionRequest
+        {
+            PageSize = 10,
+            Page = 10
+        };
+        var result = await apiClient.GetNftCollections(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Has.Count.EqualTo(1));
+
+            var collection = result.Data[0];
+            Assert.That(collection, Is.Not.Null);
+            Assert.That(collection.CollectionId, 
+                Is.EqualTo("fc8dd31116b25e6690d83f6fb102e67ac6a9364dc2b96285d636aed462c4a983"));
+            Assert.That(collection.Name, Is.EqualTo("SMB Gen2"));
+            Assert.That(collection.Symbol, Is.EqualTo("SMB"));
+            Assert.That(collection.FloorPrice, Is.EqualTo(32.359));
+            Assert.That(collection.Items, Is.EqualTo(5069));
+            Assert.That(collection.Marketplaces, Has.Count.EqualTo(5));
+            Assert.That(collection.Marketplaces[0], 
+                Is.EqualTo("M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K"));
+            Assert.That(collection.Marketplaces[1], 
+                Is.EqualTo("CJsLwbP1iu5DuUikHEJnLfANgKy6stB2uFgvBBHoyxwz"));
+            Assert.That(collection.Marketplaces[2], 
+                Is.EqualTo("mmm3XBJg5gk8XJxEKBvdgptZz6SgK4tXvn36sodowMc"));
+            Assert.That(collection.Marketplaces[3], 
+                Is.EqualTo("TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN"));
+            Assert.That(collection.Marketplaces[4], 
+                Is.EqualTo("hadeK9DLv9eA7ya5KCTqSvSvRZeJC3JgD5a9Y3CNbvu"));
+            Assert.That(collection.Volumes, Is.EqualTo(4106.231117706));
+            Assert.That(collection.TotalVolPrev24h, Is.EqualTo(1295.469643436));
+        });
+
+    }
+
     #endregion
 
     #region Transaction APIs
