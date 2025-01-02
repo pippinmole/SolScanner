@@ -225,6 +225,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     public Task<SolscanResponse<List<NftCollection>>> GetNftCollections(NftCollectionRequest r, CancellationToken ctx = default) =>
         WithRequestAsync<SolscanResponse<List<NftCollection>>>(r, ctx);
     
+    /// <summary>
+    /// Get NFT activities
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<NftCollectionItem>>> GetNftCollectionItems(NftCollectionItemsRequest r, CancellationToken ctx = default) =>
+        WithRequestAsync<SolscanResponse<List<NftCollectionItem>>>(r, ctx);
+    
     #endregion
 
     #region Transaction APIs

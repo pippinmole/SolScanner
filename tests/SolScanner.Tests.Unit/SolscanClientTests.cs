@@ -1535,7 +1535,7 @@ internal sealed class SolscanClientTests
             Assert.That(nftMeta.Edition, Is.EqualTo(0));
             Assert.That(nftMeta.Attributes, Has.Count.GreaterThan(0));
             Assert.That(nftMeta.Attributes[0].TraitType, Is.EqualTo("benji"));
-            Assert.That(nftMeta.Attributes[0].Value, Is.EqualTo("Benji"));
+            Assert.That(nftMeta.Attributes[0].Value.ToString(), Is.EqualTo("Benji"));
 
             var nftProperties = nftMeta.Properties;
             Assert.That(nftProperties, Is.Not.Null);
@@ -1637,6 +1637,94 @@ internal sealed class SolscanClientTests
             Assert.That(activity.CurrencyToken,
                 Is.EqualTo("So11111111111111111111111111111111111111112"));
             Assert.That(activity.CurrencyDecimals, Is.EqualTo(9));
+        });
+    }
+
+    [Test]
+    public async Task GetNftCollectionItems_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "tradeInfo": {
+                                                "trade_time": 1720417931,
+                                                "signature": "51BSKLGXwnrgjNMsENRyMSVxRTkzdsorFiLXBL722jR5CMWvbqVHPb3mjyj8yq84GNyB7BpdvFVBDXAp7BQKT7rB",
+                                                "market_id": "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K",
+                                                "type": "Buy",
+                                                "price": "33000000000",
+                                                "currency_token": "So11111111111111111111111111111111111111112",
+                                                "currency_decimals": 9,
+                                                "seller": "D5i8StjMcLzKRteBDycErrhcUz8n4qdggdYKmeXnP5Hn",
+                                                "buyer": "5VPLqgeK9DijCy46NM1Ma5kxNdFuxCyvT9e1yqAhXG1k"
+                                              },
+                                              "info": {
+                                                "address": "BPQi6NrD6M9s4TaUYQtX66uPWy1A5C39o619MZDGxsjg",
+                                                "token_name": "SMB #2960",
+                                                "token_symbol": "SMB",
+                                                "collection_id": "fc8dd31116b25e6690d83f6fb102e67ac6a9364dc2b96285d636aed462c4a983",
+                                                "mint_tx": "5rivnBGERL4VdZXf4VwiiRYJQpEi1Qu5bWj1wAibBNf8hVvmKFhqUAXjSVLCED2rycHMfhmHTfnQJoy4Khfz7ybt",
+                                                "created_time": 1659678853
+                                              }
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/nft/collection/items?collection=COLLECTION_ID&page=10&page_size=10&sort_by=last_trade")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new NftCollectionItemsRequest
+        {
+            Collection = "COLLECTION_ID",
+            SortBy = ENftCollectionSortBy.LastTrade,
+            PageSize = 10,
+            Page = 10
+        };
+        var result = await apiClient.GetNftCollectionItems(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Has.Count.EqualTo(1));
+
+            var activity = result.Data[0];
+            Assert.That(activity, Is.Not.Null);
+
+            Assert.That(activity.TradeInfo, Is.Not.Null);
+            Assert.That(activity.TradeInfo.Type, Is.EqualTo("Buy"));
+            Assert.That(activity.TradeInfo.Price, Is.EqualTo("33000000000"));
+            Assert.That(activity.TradeInfo.CurrencyToken, Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(activity.TradeInfo.Seller, Is.EqualTo("D5i8StjMcLzKRteBDycErrhcUz8n4qdggdYKmeXnP5Hn"));
+            Assert.That(activity.TradeInfo.Buyer, Is.EqualTo("5VPLqgeK9DijCy46NM1Ma5kxNdFuxCyvT9e1yqAhXG1k"));
+
+            Assert.That(activity.Info, Is.Not.Null);
+            Assert.That(activity.Info.Address, Is.EqualTo("BPQi6NrD6M9s4TaUYQtX66uPWy1A5C39o619MZDGxsjg"));
+            Assert.That(activity.Info.TokenName, Is.EqualTo("SMB #2960"));
+            Assert.That(activity.Info.TokenSymbol, Is.EqualTo("SMB"));
+            Assert.That(activity.Info.CollectionId,
+                Is.EqualTo("fc8dd31116b25e6690d83f6fb102e67ac6a9364dc2b96285d636aed462c4a983"));
+            Assert.That(activity.Info.MintTx,
+                Is.EqualTo("5rivnBGERL4VdZXf4VwiiRYJQpEi1Qu5bWj1wAibBNf8hVvmKFhqUAXjSVLCED2rycHMfhmHTfnQJoy4Khfz7ybt"));
+            Assert.That(activity.Info.CreatedTime, Is.EqualTo(1659678853));
         });
     }
 

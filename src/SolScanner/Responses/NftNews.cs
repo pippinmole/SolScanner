@@ -81,7 +81,7 @@ public sealed class Attribute
     public string TraitType { get; set; }
 
     [JsonPropertyName("value")]
-    public string Value { get; set; }
+    public object Value { get; set; }
 }
 
 public sealed class Creator

@@ -478,4 +478,15 @@ public sealed class UrlBuilder
         };
         return this;
     }
+
+    public UrlBuilder WithSortBy(ENftCollectionSortBy sortBy)
+    {
+        _sortBy = sortBy switch
+        {
+            ENftCollectionSortBy.LastTrade => "last_trade",
+            ENftCollectionSortBy.ListingPrice => "listing_price",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null)
+        };
+        return this;
+    }
 }
