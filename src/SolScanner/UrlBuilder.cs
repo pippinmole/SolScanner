@@ -39,6 +39,9 @@ public sealed class UrlBuilder
     private string _tx;
     private uint _fromAmount;
     private uint _toAmount;
+    private string _collection;
+    private string _currencyToken;
+    private uint[] _prices = [];
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -345,6 +348,9 @@ public sealed class UrlBuilder
         foreach (var blockTime in _blockTimes)
             query.Add($"block_time[]={blockTime}");
 
+        foreach (var price in _prices)
+            query.Add($"price[]={price}");
+
         foreach (var time in _times)
             query.Add($"time[]={time}");
 
@@ -356,6 +362,12 @@ public sealed class UrlBuilder
 
         if (!string.IsNullOrEmpty(_flow))
             query.Add($"flow={_flow}");
+        
+        if (!string.IsNullOrEmpty(_collection))
+            query.Add($"collection={_collection}");    
+        
+        if (!string.IsNullOrEmpty(_currencyToken))
+            query.Add($"currency_token={_currencyToken}");
 
         if (_page > 0)
             query.Add($"page={_page}");
@@ -418,6 +430,30 @@ public sealed class UrlBuilder
             ENftFilter.CreatedTime => "created_time",
             _ => throw new ArgumentOutOfRangeException(nameof(filter), filter, null)
         };
+        return this;
+    }
+
+    public UrlBuilder WithCollection(string collection)
+    {
+        _collection = collection;
+        return this;
+    }
+
+    public UrlBuilder WithCurrencyToken(string currencyToken)
+    {
+        _currencyToken = currencyToken;
+        return this;
+    }
+
+    public UrlBuilder WithPrices(uint[] prices)
+    {
+        _prices = prices;
+        return this;
+    }
+
+    public UrlBuilder WithActivityTypes(params ENftActivityType[] activityTypes)
+    {
+        _activityTypes.AddRange(activityTypes.Select(x => x.ToString()));
         return this;
     }
 }

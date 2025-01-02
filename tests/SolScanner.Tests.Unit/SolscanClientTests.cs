@@ -1553,6 +1553,93 @@ internal sealed class SolscanClientTests
         });
     }
 
+    [Test]
+    public async Task GetNftActivities_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "block_id": 276338494,
+                                              "trans_id": "2BFpcL7MYfuAPGwXWX5YWghHJtJHpq5A62pZT5qfQrsQSU2ja5okLiWiSHDUSTzFxsgDcox6TdbjkvXjncgFXZwP",
+                                              "block_time": 1720420818,
+                                              "time": "2024-07-08T06:40:18.000Z",
+                                              "activity_type": "ACTIVITY_NFT_UPDATE_PRICE",
+                                              "from_address": "sorpyYr8gyreU9s8fPxxu3Erm7XZz4JE7ynTRMFNKTg",
+                                              "to_address": "",
+                                              "token_address": "2Y8WGuu5FuT2xAL92UPUCVbBTHt1fVrNcL6tbpnCn7zf",
+                                              "marketplace_address": "TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN",
+                                              "collection_address": "9eccb05f1b5fc4ca5ad9f54dbbc4b481ec2c8016493c76be94cfbd060dbcefc9",
+                                              "amount": 1,
+                                              "price": 1316000000,
+                                              "currency_token": "So11111111111111111111111111111111111111112",
+                                              "currency_decimals": 9
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/nft/activities?source[]=SOURCE_ADDRESS_1&activity_type[]=ACTIVITY_NFT_SOLD&from=FROM_ADDRESS&to=TO_ADDRESS&page=10&page_size=10")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new NftActivitiesRequest
+        {
+            From = "FROM_ADDRESS",
+            To = "TO_ADDRESS",
+            Source = ["SOURCE_ADDRESS_1"],
+            PageSize = 10,
+            Page = 10
+        };
+        var result = await apiClient.GetNftActivities(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Has.Count.EqualTo(1));
+
+            var activity = result.Data[0];
+            Assert.That(activity, Is.Not.Null);
+            Assert.That(activity.BlockId, Is.EqualTo(276338494));
+            Assert.That(activity.TransId,
+                Is.EqualTo("2BFpcL7MYfuAPGwXWX5YWghHJtJHpq5A62pZT5qfQrsQSU2ja5okLiWiSHDUSTzFxsgDcox6TdbjkvXjncgFXZwP"));
+            Assert.That(activity.BlockTime, Is.EqualTo(1720420818));
+            Assert.That(activity.Time.ToUniversalTime(), Is.EqualTo(DateTime.Parse("2024-07-08T06:40:18.000Z").ToUniversalTime()));
+            Assert.That(activity.ActivityType, Is.EqualTo("ACTIVITY_NFT_UPDATE_PRICE"));
+            Assert.That(activity.FromAddress,
+                Is.EqualTo("sorpyYr8gyreU9s8fPxxu3Erm7XZz4JE7ynTRMFNKTg"));
+            Assert.That(activity.ToAddress, Is.EqualTo(""));
+            Assert.That(activity.TokenAddress,
+                Is.EqualTo("2Y8WGuu5FuT2xAL92UPUCVbBTHt1fVrNcL6tbpnCn7zf"));
+            Assert.That(activity.MarketplaceAddress,
+                Is.EqualTo("TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN"));
+            Assert.That(activity.CollectionAddress,
+                Is.EqualTo("9eccb05f1b5fc4ca5ad9f54dbbc4b481ec2c8016493c76be94cfbd060dbcefc9"));
+            Assert.That(activity.Amount, Is.EqualTo(1));
+            Assert.That(activity.Price, Is.EqualTo(1316000000));
+            Assert.That(activity.CurrencyToken,
+                Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(activity.CurrencyDecimals, Is.EqualTo(9));
+        });
+    }
+
     #endregion
 
     #region Transaction APIs
