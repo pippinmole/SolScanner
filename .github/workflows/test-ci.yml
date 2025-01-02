@@ -32,7 +32,7 @@ jobs:
         run: dotnet test ./tests/SolScanner.Tests.Unit/SolScanner.Tests.Unit.csproj -e SolScan:ApiKey="${{ secrets.API_KEY }}"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: ./src/SolScanner/bin/Release/
