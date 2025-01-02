@@ -157,6 +157,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     /// <returns></returns>
     public Task<SolscanResponse<List<TokenPrice>>> GetTokenPrice(TokenPriceRequest r, CancellationToken ctx) =>
         WithRequestAsync<SolscanResponse<List<TokenPrice>>>(r, ctx);
+    
+    /// <summary>
+    /// Get the list of trending tokens
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<TopToken>>> GetTopToken(CancellationToken ctx) =>
+        WithRequestAsync<SolscanResponse<List<TopToken>>>(new TopTokenRequest(), ctx);
 
     #endregion
 
@@ -317,6 +326,14 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
 
         var json = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<T>(json);
+    }
+}
+
+public sealed class TopTokenRequest : BaseRequest
+{
+    public override string GetUrl()
+    {
+        return "https://pro-api.solscan.io/v2.0/token/top";
     }
 }
 
