@@ -1162,6 +1162,70 @@ internal sealed class SolscanClientTests
             Assert.That(result.Data[2].Price, Is.EqualTo(0.953814));
         });
     }
+    [Test]
+    public async Task GetTokenHolders_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "total": 823992,
+                                            "items": [
+                                              {
+                                                "address": "26ddLrqXDext6caX1gRxARePN4kzajyGiAUz9JmzmTGQ",
+                                                "amount": 4090152116568146,
+                                                "decimals": 6,
+                                                "owner": "61aq585V8cR2sZBeawJFt2NPqmN7zDi1sws4KLs5xHXV",
+                                                "rank": 1
+                                              }
+                                            ]
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/holders?address=ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49&page=1&page_size=10&from_amount=100&to_amount=1000")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TokenHoldersRequest
+        {
+            Address = "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+            PageSize = 10,
+            Page = 1,
+            FromAmount = 100,
+            ToAmount = 1000
+        };
+        var result = await apiClient.GetTokenHolders(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data.Total, Is.EqualTo(823992));
+            Assert.That(result.Data.Items, Is.Not.Empty);
+            Assert.That(result.Data.Items[0].Address, Is.EqualTo("26ddLrqXDext6caX1gRxARePN4kzajyGiAUz9JmzmTGQ"));
+            Assert.That(result.Data.Items[0].Amount, Is.EqualTo(4090152116568146));
+            Assert.That(result.Data.Items[0].Decimals, Is.EqualTo(6));
+            Assert.That(result.Data.Items[0].Owner, Is.EqualTo("61aq585V8cR2sZBeawJFt2NPqmN7zDi1sws4KLs5xHXV"));
+            Assert.That(result.Data.Items[0].Rank, Is.EqualTo(1));
+        });
+    }
     
     [Test]
     public async Task GetTopToken_WithValidRequest_ReturnsAccountTransfer()

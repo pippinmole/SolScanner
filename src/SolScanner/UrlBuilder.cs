@@ -37,6 +37,8 @@ public sealed class UrlBuilder
     private uint _blockNumber;
     private string _filter;
     private string _tx;
+    private uint _fromAmount;
+    private uint _toAmount;
 
     public UrlBuilder WithBaseUrl(string baseUrl)
     {
@@ -381,6 +383,12 @@ public sealed class UrlBuilder
 
         if (!string.IsNullOrEmpty(_filter))
             query.Add($"filter={_filter}");
+        
+        if(_fromAmount > 0) 
+            query.Add($"from_amount={_fromAmount}");
+        
+        if(_toAmount > 0) 
+            query.Add($"to_amount={_toAmount}");
 
         if (_hideZero != null)
         {
@@ -391,4 +399,15 @@ public sealed class UrlBuilder
     }
 
 
+    public UrlBuilder WithFromAmount(uint fromAmount)
+    {
+        _fromAmount = fromAmount;
+        return this;
+    }   
+    
+    public UrlBuilder WithToAmount(uint toAmount)
+    {
+        _toAmount = toAmount;
+        return this;
+    }
 }
