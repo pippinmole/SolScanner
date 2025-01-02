@@ -36,6 +36,45 @@ SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pr
     }
     ```
 
+## Progress
+
+| Description                       | Section          | Function Name                       | Is Implemented |
+|-----------------------------------|------------------|-------------------------------------|----------------|
+| Account transfer                  | Account APIs     | `GetAccountTransfer`                | ✅              |
+| Account token-accounts            | Account APIs     | `GetAccountTokenAccounts`           | ✅              |
+| Account defi activities           | Account APIs     | `GetAccountDefiActivity`            | ✅              |
+| Account balance change activities | Account APIs     | `GetAccountBalanceChangeActivities` | ✅              |
+| Account transactions              | Account APIs     | `GetAccountTransactions`            | ✅              |
+| Account stake                     | Account APIs     | `GetAccountStakes`                  | ✅              |
+| Account detail                    | Account APIs     | `GetAccountDetails`                 | ✅              |
+| Account rewards export            | Account APIs     | `GetAccountRewardsExport`           | ✅              |
+| Account transfer export           | Account APIs     | `GetAccountTransportExport`         | ✅              |
+| Token transfer                    | Token APIs       | ``                                  | ❌              |
+| Token defi activities             | Token APIs       | ``                                  | ❌              |
+| Token markets                     | Token APIs       | ``                                  | ❌              |
+| Token list                        | Token APIs       | ``                                  | ❌              |
+| Token trending                    | Token APIs       | ``                                  | ❌              |
+| Token price                       | Token APIs       | ``                                  | ❌              |
+| Token holders                     | Token APIs       | ``                                  | ❌              |
+| Token meta                        | Token APIs       | ``                                  | ❌              |
+| Token top                         | Token APIs       | ``                                  | ❌              |
+| News NFT                          | NFT APIs         | ``                                  | ❌              |
+| NFT activities                    | NFT APIs         | ``                                  | ❌              |
+| NFT collection lists              | NFT APIs         | ``                                  | ❌              |
+| NFT collection items              | NFT APIs         | ``                                  | ❌              |
+| Transaction last                  | Transaction APIs | `GetLastTransactions`               | ✅              |
+| Transaction detail                | Transaction APIs | `GetTransactionDetails`             | ✅              |
+| Transaction actions               | Transaction APIs | ``                                  | ❌              |
+| Block last                        | Block APIs       | `GetLastBlock`                      | ✅              |
+| Block transactions                | Block APIs       | `GetBlockTransactions`              | ✅              |
+| Block detail                      | Block APIs       | `GetBlockDetails`                   | ✅              |
+| Monitor usage                     | Monitoring APIs  | `GetMonitorUsage`                   | ✅              |
+| Pool market list                  | Market APIs      | `GetPoolMarketList`                 | ✅              |
+| Get market info                   | Market APIs      | `GetMarketInfo`                     | ✅              |
+| Get market volume                 | Market APIs      | `GetMarketVolume`                   | ✅              |
+| Get market volume                 | Market APIs      | `GetMarketVolume`                   | ✅              |
+
+
 ## How to contribute
 
 You can contribute by pulling the code, making some changes and then opening a pull request. The changes will be revised and merged into main if it is a valid feature/bug fix.

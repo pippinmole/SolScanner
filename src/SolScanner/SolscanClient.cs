@@ -96,9 +96,10 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     // /// Export the rewards for an account. Maximum items: 5000
     // /// </summary>
     // /// <param name="r"></param>
+    // /// <param name="token"></param>
     // /// <returns></returns>
-    // public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r, token) =>
-    //     WithRequest<SolscanResponse<List<AccountStake>>>(r, token);
+    // public Task<SolscanResponse<List<AccountStake>>> GetAccountRewardsExport(AccountRewardsExportRequest r, CancellationToken token) =>
+    //     WithRequestAsync<SolscanResponse<List<AccountStake>>>(r, token);
 
     // /// <summary>
     // /// Export transfer data of an account
