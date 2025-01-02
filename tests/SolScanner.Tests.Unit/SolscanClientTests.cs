@@ -703,6 +703,88 @@ internal sealed class SolscanClientTests
 
     #region Token APIs
 
+    [Test]
+    public async Task GetTokenTransfers_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "block_id": 276312035,
+                                              "trans_id": "4x6jxJFCgbjLACvXgqb3aRTsrSk6RSccfgreJLgF3wL4xmZ9897ZyPTxvVV7sbukGeNeMqLb12EtQpzrxzhEkeMC",
+                                              "block_time": 1720408627,
+                                              "time": "2024-07-08T03:17:07.000Z",
+                                              "activity_type": "ACTIVITY_SPL_TRANSFER",
+                                              "from_address": "J6vHZDKghn3dbTG7pcBLzHMnXFoqUEiHVaFfZxojMjXs",
+                                              "to_address": "7rhxnLV8C77o6d8oz26AgK8x8m5ePsdeRawjqvojbjnQ",
+                                              "token_address": "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+                                              "token_decimals": 5,
+                                              "amount": 500000000,
+                                              "flow": "in"
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/transfer?address=SCre8QfQdNWNLqiFd99TBUhWAov15CuLUQ3Grf8gT8X&activity_type[]=ACTIVITY_SPL_TRANSFER&from=Aa4qpi5N2zqT2bKeqRGXdsmy237a4vWwarTsWZPbChAm&to=EZCGWhoRP844pjGaKAEJn9XukY6dN72Y3f2HX7FETpeL&amount[]=1&amount[]=2&block_time[]=1720153259&block_time[]=1720153276&exclude_amount_zero=true&page=1337&page_size=20&sort_by=block_time&sort_order=desc")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new GetTokenTransferRequest
+        {
+            Address = "SCre8QfQdNWNLqiFd99TBUhWAov15CuLUQ3Grf8gT8X",
+            From = "Aa4qpi5N2zqT2bKeqRGXdsmy237a4vWwarTsWZPbChAm",
+            To = "EZCGWhoRP844pjGaKAEJn9XukY6dN72Y3f2HX7FETpeL",
+            Amount = [1, 2],
+            BlockTime = [1720153259, 1720153276],
+            ExcludeAmountZero = true,
+            Page = 1337,
+            PageSize = 20,
+            SortBy = ESortByBlock.BlockTime,
+            SortOrder = ESortOrder.Descending
+        };
+        var result = await apiClient.GetTokenTransfers(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].BlockId, Is.EqualTo(276312035));
+            Assert.That(result.Data[0].TransactionId,
+                Is.EqualTo("4x6jxJFCgbjLACvXgqb3aRTsrSk6RSccfgreJLgF3wL4xmZ9897ZyPTxvVV7sbukGeNeMqLb12EtQpzrxzhEkeMC"));
+            Assert.That(result.Data[0].BlockTime, Is.EqualTo(1720408627));
+            Assert.That(
+                result.Data[0].Time.ToUniversalTime(),
+                Is.EqualTo(DateTime.Parse("2024-07-08T03:17:07.000Z", CultureInfo.InvariantCulture).ToUniversalTime())
+            );
+            Assert.That(result.Data[0].ActivityType, Is.EqualTo(EActivityType.ACTIVITY_SPL_TRANSFER));
+            Assert.That(result.Data[0].FromAddress, Is.EqualTo("J6vHZDKghn3dbTG7pcBLzHMnXFoqUEiHVaFfZxojMjXs"));
+            Assert.That(result.Data[0].ToAddress, Is.EqualTo("7rhxnLV8C77o6d8oz26AgK8x8m5ePsdeRawjqvojbjnQ"));
+            Assert.That(result.Data[0].TokenAddress, Is.EqualTo("DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"));
+            Assert.That(result.Data[0].TokenDecimals, Is.EqualTo(5));
+            Assert.That(result.Data[0].Amount, Is.EqualTo(500000000));
+            Assert.That(result.Data[0].Flow, Is.EqualTo(EFlow.In));
+        });
+    }
+    
     #endregion
 
     #region NFT APIs

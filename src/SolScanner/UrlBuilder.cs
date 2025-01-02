@@ -154,6 +154,16 @@ public sealed class UrlBuilder
         };
         return this;
     }
+    
+    public UrlBuilder WithSortBy(ESortByBlock sortBy)
+    {
+        _sortBy = sortBy switch
+        {
+            ESortByBlock.BlockTime => "block_time",
+            _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null)
+        };
+        return this;
+    }
 
     public UrlBuilder WithSortOrder(string sortOrder)
     {
