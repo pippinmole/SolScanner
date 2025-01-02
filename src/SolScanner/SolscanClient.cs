@@ -139,6 +139,15 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     /// <returns></returns>
     public Task<SolscanResponse<List<TrendingToken>>> GetTrendingTokens(TrendingTokenRequest r, CancellationToken ctx) =>
         WithRequestAsync<SolscanResponse<List<TrendingToken>>>(r, ctx);
+    
+    /// <summary>
+    /// Get the list of trending tokens
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<List<TokenPrice>>> GetTokenPrice(TokenPriceRequest r, CancellationToken ctx) =>
+        WithRequestAsync<SolscanResponse<List<TokenPrice>>>(r, ctx);
 
     #endregion
 

@@ -918,6 +918,74 @@ internal sealed class SolscanClientTests
         });
     }
     
+    [Test]
+    public async Task GetTokenPrice_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": [
+                                            {
+                                              "date": 20240717,
+                                              "price": 0.895604
+                                            },
+                                            {
+                                              "date": 20240718,
+                                              "price": 0.962621
+                                            },
+                                            {
+                                              "date": 20240719,
+                                              "price": 0.953814
+                                            }
+                                          ]
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/token/price?address=ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49&time[]=20240717")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TokenPriceRequest
+        {
+            Address = "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+            Times = [
+                DateTime.ParseExact("20240717", "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None),
+            ]
+        };
+        var result = await apiClient.GetTokenPrice(request, CancellationToken.None);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data, Is.Not.Empty);
+            Assert.That(result.Data[0].Date, Is.EqualTo(20240717));
+            Assert.That(result.Data[0].Price, Is.EqualTo(0.895604));
+            
+            Assert.That(result.Data[1].Date, Is.EqualTo(20240718));
+            Assert.That(result.Data[1].Price, Is.EqualTo(0.962621));
+            
+            Assert.That(result.Data[2].Date, Is.EqualTo(20240719));
+            Assert.That(result.Data[2].Price, Is.EqualTo(0.953814));
+        });
+    }
+    
     #endregion
 
     #region NFT APIs
