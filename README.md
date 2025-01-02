@@ -64,14 +64,13 @@ SolScanner is a .NET wrapper for the [SolScan API](https://pro-api.solscan.io/pr
 | NFT collection items              | NFT APIs         | ``                                  | ❌              |
 | Transaction last                  | Transaction APIs | `GetLastTransactions`               | ✅              |
 | Transaction detail                | Transaction APIs | `GetTransactionDetails`             | ✅              |
-| Transaction actions               | Transaction APIs | ``                                  | ❌              |
+| Transaction actions               | Transaction APIs | `GetTransactionActions`             | ✅              |
 | Block last                        | Block APIs       | `GetLastBlock`                      | ✅              |
 | Block transactions                | Block APIs       | `GetBlockTransactions`              | ✅              |
 | Block detail                      | Block APIs       | `GetBlockDetails`                   | ✅              |
 | Monitor usage                     | Monitoring APIs  | `GetMonitorUsage`                   | ✅              |
 | Pool market list                  | Market APIs      | `GetPoolMarketList`                 | ✅              |
 | Get market info                   | Market APIs      | `GetMarketInfo`                     | ✅              |
-| Get market volume                 | Market APIs      | `GetMarketVolume`                   | ✅              |
 | Get market volume                 | Market APIs      | `GetMarketVolume`                   | ✅              |
 
 

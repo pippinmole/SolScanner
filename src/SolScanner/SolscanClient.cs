@@ -221,6 +221,16 @@ public sealed class SolscanClient(string apiKey, HttpClient client) : ISolscanCl
     public Task<SolscanResponse<TransactionDetailsResponse>> GetTransactionDetails(TransactionDetailsRequest r,
         CancellationToken token = default) =>
         WithRequestAsync<SolscanResponse<TransactionDetailsResponse>>(r, token);
+    
+    /// <summary>
+    /// Get the detail of a transaction. Return transaction data after parsed by Solscan Parser. Data will include very helpful data such as: token and sol balance changes, IDL data, defi or transfer activities of each instructions
+    /// </summary>
+    /// <param name="r"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public Task<SolscanResponse<TransactionAction>> GetTransactionActions(TransactionActionsRequest r,
+        CancellationToken token = default) =>
+        WithRequestAsync<SolscanResponse<TransactionAction>>(r, token);
 
     #endregion
 

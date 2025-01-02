@@ -1790,6 +1790,162 @@ internal sealed class SolscanClientTests
     });
     }
 
+    [Test]
+    public async Task GetTransactionActions_WithValidRequest_ReturnsAccountTransfer()
+    {
+        // Arrange
+        var fakeResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent("""
+                                        {
+                                          "success": true,
+                                          "data": {
+                                            "tx_hash": "5FCvNAzfucpzCPZ87Wr5KtzWfjz8WEuNiFQNELeHNZGDz9kwyUUfvyfkz6xZbkiWTnKMeQ3QVqYaKNB7Z38RrdJU",
+                                            "block_id": 276736926,
+                                            "block_time": 1720605023,
+                                            "time": "2024-07-10T09:50:23.000Z",
+                                            "fee": 74004,
+                                            "transfers": [
+                                              {
+                                                "source_owner": "NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash",
+                                                "source": "7CkEbKe131pb4dAW1kTJPSv5oaMBvFg9Was4v8P2PX7c",
+                                                "destination": "9zXV3Ju93iaMK36NHQ7kvRp7SfkprHJhAw8FFBQn2P9M",
+                                                "destination_owner": "7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga",
+                                                "transfer_type": "ACTIVITY_SPL_TRANSFER",
+                                                "token_address": "So11111111111111111111111111111111111111112",
+                                                "decimals": 9,
+                                                "amount_str": "140000000",
+                                                "amount": 140000000,
+                                                "program_id": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+                                                "outer_program_id": "bank7GaK8LkjyrLpSZjGuXL8z7yae6JqbunEEnU9FS4",
+                                                "ins_index": 1,
+                                                "outer_ins_index": 2
+                                              }
+                                            ],
+                                            "activities": [
+                                              {
+                                                "name": "MeteoraDlmmSwap",
+                                                "activity_type": "ACTIVITY_TOKEN_SWAP",
+                                                "program_id": "LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo",
+                                                "data": {
+                                                  "amm_id": "7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga",
+                                                  "amm_authority": null,
+                                                  "account": "NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash",
+                                                  "token_1": "So11111111111111111111111111111111111111112",
+                                                  "token_2": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+                                                  "amount_1": 140000000,
+                                                  "amount_1_str": "140000000",
+                                                  "amount_2": 25271320,
+                                                  "amount_2_str": "25271320",
+                                                  "token_decimal_1": 9,
+                                                  "token_decimal_2": 6,
+                                                  "token_account_1_1": "7CkEbKe131pb4dAW1kTJPSv5oaMBvFg9Was4v8P2PX7c",
+                                                  "token_account_1_2": "9zXV3Ju93iaMK36NHQ7kvRp7SfkprHJhAw8FFBQn2P9M",
+                                                  "token_account_2_1": "HoL4xqoB9LteY7TdVjUVpw2B8YAN1wnqsbEryNRdvmuP",
+                                                  "token_account_2_2": "HMDfkgnqHSsrVZ6XikNwALZ89GiSsAu7GBx1UkUxd6ts",
+                                                  "owner_1": "NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash",
+                                                  "owner_2": "7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga"
+                                                },
+                                                "ins_index": 0,
+                                                "outer_ins_index": 2,
+                                                "outer_program_id": "bank7GaK8LkjyrLpSZjGuXL8z7yae6JqbunEEnU9FS4"
+                                              }
+                                            ]
+                                          }
+                                        }
+                                        """)
+        };
+
+        var handler = new TestHttpMessageHandler((request, cancellationToken) =>
+        {
+            Assert.That(request.Method, Is.EqualTo(HttpMethod.Get));
+            Assert.That(request.RequestUri,
+                Is.EqualTo(new Uri(
+                    "https://pro-api.solscan.io/v2.0/transaction/actions?tx=3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3")));
+            return Task.FromResult(fakeResponse);
+        });
+
+        var httpClient = new HttpClient(handler);
+        var apiClient = new SolscanClient("", httpClient);
+
+        // Act
+        var request = new TransactionActionsRequest
+        {
+            Tx = "3xRGzAqsto9RujZUKNXrLRASTiER2GnWi4Z41vHbpBHxT26HdeCKFD5LZx7D2KiSJuAhdiuzZv7Sw2kaAXAiiYh3"
+        };
+        var result = await apiClient.GetTransactionActions(request);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Success, Is.True);
+            Assert.That(result.Data, Is.Not.Null);
+            Assert.That(result.Data.TxHash,
+                Is.EqualTo("5FCvNAzfucpzCPZ87Wr5KtzWfjz8WEuNiFQNELeHNZGDz9kwyUUfvyfkz6xZbkiWTnKMeQ3QVqYaKNB7Z38RrdJU"));
+            Assert.That(result.Data.BlockId, Is.EqualTo(276736926));
+            Assert.That(result.Data.BlockTime, Is.EqualTo(1720605023));
+            Assert.That(result.Data.Time.ToUniversalTime(), Is.EqualTo(DateTime.Parse("2024-07-10T09:50:23.000Z", CultureInfo.InvariantCulture).ToUniversalTime()));
+            Assert.That(result.Data.Fee, Is.EqualTo(74004));
+
+            Assert.That(result.Data.Transfers, Is.Not.Empty);
+            Assert.That(result.Data.Transfers[0].SourceOwner,
+                Is.EqualTo("NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash"));
+            Assert.That(result.Data.Transfers[0].Source,
+                Is.EqualTo("7CkEbKe131pb4dAW1kTJPSv5oaMBvFg9Was4v8P2PX7c"));
+            Assert.That(result.Data.Transfers[0].Destination,
+                Is.EqualTo("9zXV3Ju93iaMK36NHQ7kvRp7SfkprHJhAw8FFBQn2P9M"));
+            Assert.That(result.Data.Transfers[0].DestinationOwner,
+                Is.EqualTo("7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga"));
+            Assert.That(result.Data.Transfers[0].TransferType,
+                Is.EqualTo("ACTIVITY_SPL_TRANSFER"));
+            Assert.That(result.Data.Transfers[0].TokenAddress,
+                Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data.Transfers[0].Decimals, Is.EqualTo(9));
+            Assert.That(result.Data.Transfers[0].Amount, Is.EqualTo(140000000));
+            Assert.That(result.Data.Transfers[0].ProgramId,
+                Is.EqualTo("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"));
+            Assert.That(result.Data.Transfers[0].OuterProgramId,
+                Is.EqualTo("bank7GaK8LkjyrLpSZjGuXL8z7yae6JqbunEEnU9FS4"));
+            Assert.That(result.Data.Transfers[0].InsIndex, Is.EqualTo(1));
+            Assert.That(result.Data.Transfers[0].OuterInsIndex, Is.EqualTo(2));
+
+            Assert.That(result.Data.Activities, Is.Not.Empty);
+            Assert.That(result.Data.Activities[0].Name, Is.EqualTo("MeteoraDlmmSwap"));
+            Assert.That(result.Data.Activities[0].ActivityType, Is.EqualTo("ACTIVITY_TOKEN_SWAP"));
+            Assert.That(result.Data.Activities[0].ProgramId,
+                Is.EqualTo("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"));
+            Assert.That(result.Data.Activities[0].Data, Is.Not.Null);
+            Assert.That(result.Data.Activities[0].Data.AmmId,
+                Is.EqualTo("7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga"));
+            Assert.That(result.Data.Activities[0].Data.Account,
+                Is.EqualTo("NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash"));
+            Assert.That(result.Data.Activities[0].Data.Token1,
+                Is.EqualTo("So11111111111111111111111111111111111111112"));
+            Assert.That(result.Data.Activities[0].Data.Token2,
+                Is.EqualTo("JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"));
+            Assert.That(result.Data.Activities[0].Data.Amount1, Is.EqualTo(140000000));
+            Assert.That(result.Data.Activities[0].Data.Amount2, Is.EqualTo(25271320));
+            Assert.That(result.Data.Activities[0].Data.TokenAccount11,
+                Is.EqualTo("7CkEbKe131pb4dAW1kTJPSv5oaMBvFg9Was4v8P2PX7c"));
+            Assert.That(result.Data.Activities[0].Data.TokenAccount12,
+                Is.EqualTo("9zXV3Ju93iaMK36NHQ7kvRp7SfkprHJhAw8FFBQn2P9M"));
+            Assert.That(result.Data.Activities[0].Data.TokenAccount21,
+                Is.EqualTo("HoL4xqoB9LteY7TdVjUVpw2B8YAN1wnqsbEryNRdvmuP"));
+            Assert.That(result.Data.Activities[0].Data.TokenAccount22,
+                Is.EqualTo("HMDfkgnqHSsrVZ6XikNwALZ89GiSsAu7GBx1UkUxd6ts"));
+            Assert.That(result.Data.Activities[0].Data.Owner1,
+                Is.EqualTo("NHtdVXcUuzULRJ3GkupLnZcxmUZ4rTP1u9kVkRzcash"));
+            Assert.That(result.Data.Activities[0].Data.Owner2,
+                Is.EqualTo("7qt1qBnQ5CNNpMH1no6jYAzuyazP5QWXsUZB7dot5kga"));
+            Assert.That(result.Data.Activities[0].InsIndex, Is.EqualTo(0));
+            Assert.That(result.Data.Activities[0].OuterInsIndex, Is.EqualTo(2));
+            Assert.That(result.Data.Activities[0].OuterProgramId,
+                Is.EqualTo("bank7GaK8LkjyrLpSZjGuXL8z7yae6JqbunEEnU9FS4"));
+        });
+    }
+
     #endregion
 
     #region Block APIs
